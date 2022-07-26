@@ -13,11 +13,14 @@ class AddAlarmScreen extends StatefulWidget {
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
   int minute = 0;
 
+  String weather = 'cloudy';
+  String weatherImage = 'images/cloudy.png';
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getPosition();
+    getWeather();
   }
 
   @override
@@ -25,6 +28,17 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     // TODO: implement dispose
   }
 
+  void getWeather() {
+    if (weather == 'cloudy') {
+      weatherImage = 'images/cloudy.png';
+    } else if (weather == 'sunny') {
+      weatherImage = 'images/sunny.png';
+    } else if (weather == 'rainy') {
+      weatherImage = 'image/rainy.png';
+    } else if (weather == 'snowy') {
+      weatherImage = 'image/snowy.png';
+    }
+  }
   void getPosition() async {
     MyPosition myPosition = MyPosition();
     await myPosition.getMyCurrentPosition();
@@ -52,7 +66,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                 child: Text('위치')),
             // Text(position),
             Image(
-              image: AssetImage('images/rain.png'),
+              image: AssetImage(weatherImage),
               height: 240,
               width: 240,
             ),
