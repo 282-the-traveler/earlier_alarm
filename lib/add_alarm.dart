@@ -70,7 +70,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               height: 240,
               width: 240,
             ),
-            Text('24도 C'),
+            Text('24도'),
             Expanded(
               child: ListView(
                 children: <Widget>[
@@ -81,7 +81,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                     },
                   ),
                   ListTile(
-                    title: Text('확률 70% 이상 시 $minute분 전에 알람이 울립니다.'),
+                    title: Text('눈, 비 확률 70% 이상 시 $minute분 전에 알람이 울립니다.'),
                     leading: Icon(
                       Icons.umbrella_sharp,
                     ),
