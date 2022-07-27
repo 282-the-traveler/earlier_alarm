@@ -3,6 +3,8 @@ import 'package:flutter_picker/flutter_picker.dart';
 import 'package:earlier_alarm/data/my_position.dart';
 import 'package:earlier_alarm/data/network.dart';
 
+const apikey = '2e61909f3e8052c7fb5f5c84702e9e62';
+
 class AddAlarmScreen extends StatefulWidget {
   const AddAlarmScreen({Key? key}) : super(key: key);
 
@@ -15,6 +17,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   String weather = 'cloudy';
   String weatherImage = 'images/cloudy.png';
+
   @override
   void initState() {
     // TODO: implement initState
@@ -39,18 +42,21 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
       weatherImage = 'image/snowy.png';
     }
   }
+
   void getPosition() async {
     MyPosition myPosition = MyPosition();
     await myPosition.getMyCurrentPosition();
-    Network network = Network('https://samples.openweathermap.org/data/2.5/weather?q=London&&appid=b6907d289e10d714a6e88b30761fae22');
+    var positionLatitude = myPosition.positionLatitude;
+    var positionLongitude = myPosition.positionLongitude;
+    var url = 'https://api.openweathermap.org/data/2.5/weather?lat=$positionLatitude&lon=$positionLongitude&appid=$apikey';
+    Network network = Network(url);
 
+    print("url:::" + url);
     var weatherData = await network.getJsonData();
-    print (weatherData);
+    print("weatherData:::" + weatherData);
   }
 
-  void fetchData() async {
-  }
-
+  void fetchData() async {}
 
   @override
   Widget build(BuildContext context) {

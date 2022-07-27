@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      body: Center (
+      body: Center(
         child: pages[selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -77,27 +77,18 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: onItemTapped,
         currentIndex: selectedIndex,
         items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.add), title: Text('Add')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-            title: Text('Add')
-          ),
+              icon: Icon(Icons.list_alt_rounded), title: Text('List')),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt_rounded),
-              title: Text('List')
-          ),
+              icon: Icon(Icons.wb_sunny_outlined), title: Text('Weather')),
           BottomNavigationBarItem(
-            icon: Icon(Icons.wb_sunny_outlined),
-              title: Text('Weather')
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map_outlined),
-              title: Text('Map')
-          ),
+              icon: Icon(Icons.map_outlined), title: Text('Map')),
         ],
-
-    ),
+      ),
     );
   }
+
   void onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
