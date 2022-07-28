@@ -17,13 +17,13 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   String weather = 'cloudy';
   String weatherImage = 'images/cloudy.png';
+  int temperature = 25;
 
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
     getPosition();
-    getWeather();
+    super.initState();
   }
 
   @override
@@ -31,29 +31,39 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     // TODO: implement dispose
   }
 
-  void getWeather() {
-    if (weather == 'cloudy') {
-      weatherImage = 'images/cloudy.png';
-    } else if (weather == 'sunny') {
-      weatherImage = 'images/sunny.png';
-    } else if (weather == 'rainy') {
-      weatherImage = 'image/rainy.png';
-    } else if (weather == 'snowy') {
-      weatherImage = 'image/snowy.png';
-    }
-  }
 
   void getPosition() async {
     MyPosition myPosition = MyPosition();
     await myPosition.getMyCurrentPosition();
     var positionLatitude = myPosition.positionLatitude;
     var positionLongitude = myPosition.positionLongitude;
-    var url = 'https://api.openweathermap.org/data/2.5/weather?lat=$positionLatitude&lon=$positionLongitude&appid=$apikey';
+    var url = 'https://api.openweathermap.org/data/2.5/weather?lat=$positionLatitude&lon=$positionLongitude&appid=$apikey&units=metric';
     Network network = Network(url);
-
-    print("url:::" + url);
     var weatherData = await network.getJsonData();
-    print("weatherData:::" + weatherData);
+    updateData(weatherData);
+  }
+
+  void updateData(dynamic weatherData) async {
+    weather = weatherData['weather'][0]['main'];
+    double doubleTemperature = weatherData['main']['temp'];
+    temperature = doubleTemperature.round();
+    print ('weather:::::::1::::'+weather);
+    print ('weather:::::::2::::'+temperature.toString());
+    await getWeather();
+  }
+
+  Future getWeather() async{
+    if (weather == 'Cloudy') {
+      weatherImage = 'images/cloudy.png';
+    } else if (weather == 'Clear') {
+      weatherImage = 'images/sunny.png';
+    } else if (weather == 'rainy') {
+      weatherImage = 'image/rainy.png';
+    } else if (weather == 'snowy') {
+      weatherImage = 'image/snowy.png';
+    }
+
+    print ('weather:::::::3::::'+weather);
   }
 
   void fetchData() async {}
@@ -76,7 +86,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               height: 240,
               width: 240,
             ),
-            Text('24도'),
+            Text('$temperature 도'),
             Expanded(
               child: ListView(
                 children: <Widget>[

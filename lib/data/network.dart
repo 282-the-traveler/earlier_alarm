@@ -10,10 +10,11 @@ class Network {
     try {
       http.Response response = await http.get(Uri.parse(url));
 
+      print('url:::' + url);
       if (response.statusCode == 200) {
         String jsonData = response.body;
         var parsedJson = jsonDecode(jsonData);
-        print('description:::' + parsedJson);
+        print('description:::' + jsonData);
         return parsedJson;
       } else {
         print(response.statusCode);
