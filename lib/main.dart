@@ -1,5 +1,6 @@
 import 'package:earlier_alarm/add_alarm.dart';
 import 'package:earlier_alarm/alarm_list.dart';
+import 'package:earlier_alarm/data/loading.dart';
 import 'package:earlier_alarm/google_map.dart';
 import 'package:earlier_alarm/weather.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int selectedIndex = 0;
 
   List<Widget> pages = [
-    AddAlarmScreen(),
+    Loading(),
     AlarmListScreen(),
     WeatherScreen(),
     GoogleMapScreen()
