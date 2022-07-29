@@ -1,5 +1,5 @@
+import 'package:earlier_alarm/current_alarm.dart';
 import 'package:earlier_alarm/add_alarm.dart';
-import 'package:earlier_alarm/alarm_list.dart';
 import 'package:earlier_alarm/data/loading.dart';
 import 'package:earlier_alarm/google_map.dart';
 import 'package:earlier_alarm/weather.dart';
@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> pages = [
     Loading(),
-    AlarmListScreen(),
+    AddAlarmScreen(),
     WeatherScreen(),
     GoogleMapScreen()
   ];
@@ -78,9 +78,9 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: onItemTapped,
         currentIndex: selectedIndex,
         items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.add), title: Text('Add')),
+          BottomNavigationBarItem(icon: Icon(Icons.list_alt_rounded), title: Text('List')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt_rounded), title: Text('List')),
+              icon: Icon(Icons.add), title: Text('Add')),
           BottomNavigationBarItem(
               icon: Icon(Icons.wb_sunny_outlined), title: Text('Weather')),
           BottomNavigationBarItem(

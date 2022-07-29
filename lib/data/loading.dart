@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:earlier_alarm/data/my_position.dart';
 import 'package:earlier_alarm/data/network.dart';
-
-import '../add_alarm.dart';
+import 'package:earlier_alarm/current_alarm.dart';
 
 const apikey = '2e61909f3e8052c7fb5f5c84702e9e62';
 
@@ -46,17 +45,17 @@ class _LoadingState extends State<Loading> {
 
   void getWeather(var weather) {
     if (weather == 'Clouds') {
-      weatherImage = 'images/cloudy.png';
+      weatherImage = 'svgs/cloudy.svg';
     } else if (weather == 'Clear') {
-      weatherImage = 'images/sunny.png';
+      weatherImage = 'svgs/day.svg';
     } else if (weather == 'rainy') {
-      weatherImage = 'image/rainy.png';
+      weatherImage = 'svgs/rainy.svg';
     } else if (weather == 'snowy') {
-      weatherImage = 'image/snowy.png';
+      weatherImage = 'svgs/snowy.svg';
     }
 
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return AddAlarmScreen(
+      return CurrentAlarmScreen(
           weather: weather, temperature: temperature, weatherImage: weatherImage,
       );
     }));
