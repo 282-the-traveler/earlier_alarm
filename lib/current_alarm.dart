@@ -1,6 +1,5 @@
 import 'package:earlier_alarm/add_alarm.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_picker/flutter_picker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timer_builder/timer_builder.dart';
 import 'package:intl/intl.dart';
@@ -140,22 +139,3 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   }
 }
 
-showPickerCustomBuilder(BuildContext context) {
-  Picker(
-      hideHeader: true,
-      adapter: DateTimePickerAdapter(
-        customColumnType: [3, 4],
-      ),
-      title: Text("시간을 선택하세요"),
-      selectedTextStyle: TextStyle(color: Colors.blue),
-      onBuilderItem: (context, text, child, selected, col, index) {
-        if (col == 0 || selected) return null;
-        return Text(text ?? '',
-            style: TextStyle(
-              color: Colors.green,
-            ));
-      },
-      onConfirm: (Picker picker, List value) {
-        print((picker.adapter as DateTimePickerAdapter).value);
-      }).showDialog(context);
-}
