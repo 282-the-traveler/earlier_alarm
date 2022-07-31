@@ -13,8 +13,6 @@ class AddAlarmScreen extends StatefulWidget {
 }
 
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
-  String name = 'noname2';
-  String time = '7:30';
   var minusMins = '90';
   var date = '2022-07-29';
   var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
@@ -24,14 +22,12 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    setTime(widget.name, widget.time);
+    setTime();
   }
 
-  void setTime(dynamic name, dynamic time) {
-    this.name = name;
-    this.time = time;
+  void setTime() {
     SharedData sharedData = SharedData();
-    sharedData.setTime(name, time, minusMins, date, week);
+    sharedData.setTime(widget.name, widget.time, minusMins, date, week);
   }
 
   showPickerCustomBuilder(BuildContext context) {
@@ -63,13 +59,13 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               showPickerCustomBuilder;
             },
             child: Text(
-              time,
+              widget.time,
               style: TextStyle(color: Colors.white, fontSize: 30.0),
             )),
         TextButton(
             onPressed: () {},
             child: Text(
-              name,
+              widget.name,
               style: TextStyle(color: Colors.white, fontSize: 30.0),
             )),
         // Row(

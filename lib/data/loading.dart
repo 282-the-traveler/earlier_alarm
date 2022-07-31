@@ -48,13 +48,13 @@ class _LoadingState extends State<Loading> {
       weatherImage = 'svgs/cloudy.svg';
     } else if (weather == 'Clear') {
       weatherImage = 'svgs/day.svg';
-    } else if (weather == 'rainy') {
+    } else if (weather == 'Rain') {
       weatherImage = 'svgs/rainy.svg';
     } else if (weather == 'snowy') {
       weatherImage = 'svgs/snowy.svg';
     }
 
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
+    Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) {
       return CurrentAlarmScreen(
           weather: weather, temperature: temperature, weatherImage: weatherImage,
       );

@@ -17,9 +17,6 @@ class CurrentAlarmScreen extends StatefulWidget {
 
 class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   int minute = 0;
-  String weather = 'Clear';
-  int temperature = 25;
-  String weatherImage = 'svgs/Sun.svg';
   dynamic name = 'noname1';
   dynamic time = '6:30';
 
@@ -27,13 +24,6 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    updateData(widget.weather, widget.temperature, widget.weatherImage);
-  }
-
-  void updateData(dynamic weather, dynamic temperature, dynamic weatherImage) {
-    this.weather = weather;
-    this.temperature = temperature;
-    this.weatherImage = weatherImage;
   }
 
   String getSystemTime() {
@@ -84,7 +74,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                   SizedBox(
                     height: 150.0,
                   ),
-                  SvgPicture.asset(weatherImage),
+                  SvgPicture.asset(widget.weatherImage),
                   TimerBuilder.periodic(Duration(minutes: 1),
                       builder: (context) {
                     return Text(
@@ -92,7 +82,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                       style: TextStyle(color: Colors.white),
                     );
                   }),
-                  Text('$temperature\u2103',
+                  Text(widget.temperature.toString()+'\u2103',
                       style: TextStyle(color: Colors.white, fontSize: 30.0)),
                   Divider(
                     height: 15.0,
@@ -115,8 +105,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                               style: TextStyle(
                                   color: Colors.white, fontSize: 45.0)),
                           onTap: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
+                            Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) {
                               return AddAlarmScreen(name: name,time: time,);
                             }));
                           },
