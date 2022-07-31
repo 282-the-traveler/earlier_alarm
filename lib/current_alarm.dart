@@ -20,6 +20,8 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String weather = 'Clear';
   int temperature = 25;
   String weatherImage = 'svgs/Sun.svg';
+  dynamic name = 'noname1';
+  dynamic time = '6:30';
 
   @override
   void initState() {
@@ -103,17 +105,19 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                         '+',
                         style: TextStyle(color: Colors.white, fontSize: 30.0),
                       )),
+                  Text(name,
+                      style: TextStyle(color: Colors.white, fontSize: 45.0)),
                   Expanded(
                     child: ListView(
                       children: <Widget>[
                         ListTile(
-                          title: Text('8:30',
+                          title: Text(time,
                               style: TextStyle(
                                   color: Colors.white, fontSize: 45.0)),
                           onTap: () {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
-                              return AddAlarmScreen();
+                              return AddAlarmScreen(name: name,time: time,);
                             }));
                           },
                         ),
@@ -138,4 +142,3 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
     );
   }
 }
-

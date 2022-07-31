@@ -3,22 +3,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 
 class AddAlarmScreen extends StatefulWidget {
-  AddAlarmScreen({this.name});
+  AddAlarmScreen({this.name, this.time});
 
   final dynamic name;
+  final dynamic time;
 
   @override
   State<AddAlarmScreen> createState() => _AddAlarmScreenState();
 }
 
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
-  var name = 'alarm';
-  var time = '8:30';
+  String name = 'noname2';
+  String time = '7:30';
   var minusMins = '90';
   var date = '2022-07-29';
   var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
 
-  void setTime() {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setTime(widget.name, widget.time);
+  }
+
+  void setTime(dynamic name, dynamic time) {
+    this.name = name;
+    this.time = time;
     SharedData sharedData = SharedData();
     sharedData.setTime(name, time, minusMins, date, week);
   }
@@ -47,13 +58,49 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(
-            child: TextButton(
-          onPressed: (){},
-          child: const Center(
-            child: Text("8:30"),
-          ),
-        ))
+        TextButton(
+            onPressed: () {
+              showPickerCustomBuilder;
+            },
+            child: Text(
+              time,
+              style: TextStyle(color: Colors.white, fontSize: 30.0),
+            )),
+        TextButton(
+            onPressed: () {},
+            child: Text(
+              name,
+              style: TextStyle(color: Colors.white, fontSize: 30.0),
+            )),
+        // Row(
+        //   children: [
+        //     ListView(
+        //       children: [
+        //         ListTile(
+        //           title: Text('Sun'),
+        //         ),
+        //         ListTile(
+        //           title: Text('Mon'),
+        //         ),
+        //         ListTile(
+        //           title: Text('Tue'),
+        //         ),
+        //         ListTile(
+        //           title: Text('Wed'),
+        //         ),
+        //         ListTile(
+        //           title: Text('Thur'),
+        //         ),
+        //         ListTile(
+        //           title: Text('Fri'),
+        //         ),
+        //         ListTile(
+        //           title: Text('Sat'),
+        //         )
+        //       ],
+        //     )
+        //   ],
+        // )
       ],
     );
   }
