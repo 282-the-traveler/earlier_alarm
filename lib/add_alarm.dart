@@ -1,6 +1,7 @@
 import 'package:earlier_alarm/data/shared_alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:intl/intl.dart';
 
 class AddAlarmScreen extends StatefulWidget {
   AddAlarmScreen({this.name, this.time});
@@ -16,7 +17,6 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   var minusMins = '90';
   var date = '2022-07-29';
   var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
-
 
   @override
   void initState() {
@@ -52,52 +52,58 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        TextButton(
-            onPressed: () {
-              showPickerCustomBuilder;
-            },
-            child: Text(
-              widget.time,
-              style: TextStyle(color: Colors.white, fontSize: 30.0),
-            )),
-        TextButton(
-            onPressed: () {},
-            child: Text(
-              widget.name,
-              style: TextStyle(color: Colors.white, fontSize: 30.0),
-            )),
-        // Row(
-        //   children: [
-        //     ListView(
-        //       children: [
-        //         ListTile(
-        //           title: Text('Sun'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Mon'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Tue'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Wed'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Thur'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Fri'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Sat'),
-        //         )
-        //       ],
-        //     )
-        //   ],
-        // )
+        Image.asset('images/cloudy.png',
+            fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+        Container(
+          child: Column(children: [
+            TextButton(
+                onPressed: () {
+                  showPickerCustomBuilder;
+                },
+                child: Text(
+                  widget.time,
+                  style: TextStyle(color: Colors.white, fontSize: 30.0),
+                )),
+            TextButton(
+                onPressed: () {},
+                child: Text(
+                  widget.name,
+                  style: TextStyle(color: Colors.white, fontSize: 30.0),
+                )),
+          ]),
+        )
       ],
+      // Row(
+      //   children: [
+      //     ListView(
+      //       children: [
+      //         ListTile(
+      //           title: Text('Sun'),
+      //         ),
+      //         ListTile(
+      //           title: Text('Mon'),
+      //         ),
+      //         ListTile(
+      //           title: Text('Tue'),
+      //         ),
+      //         ListTile(
+      //           title: Text('Wed'),
+      //         ),
+      //         ListTile(
+      //           title: Text('Thur'),
+      //         ),
+      //         ListTile(
+      //           title: Text('Fri'),
+      //         ),
+      //         ListTile(
+      //           title: Text('Sat'),
+      //         )
+      //       ],
+      //     )
+      //   ],
+      // )
     );
   }
 }

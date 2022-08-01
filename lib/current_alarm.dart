@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timer_builder/timer_builder.dart';
 import 'package:intl/intl.dart';
+import 'package:earlier_alarm/data/shared_alarm.dart';
 
 class CurrentAlarmScreen extends StatefulWidget {
-  CurrentAlarmScreen({this.weather, this.temperature, this.weatherImage});
+  CurrentAlarmScreen({this.temperature, this.weatherImage});
 
-  final dynamic weather;
   final dynamic temperature;
   final dynamic weatherImage;
 
@@ -20,15 +20,26 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   dynamic name = 'noname1';
   dynamic time = '6:30';
 
+  void getTime(String time) {
+    SharedData sharedData = SharedData();
+    sharedData.getTime(time);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getTime(this.name);
   }
 
   String getSystemTime() {
     var now = DateTime.now();
     return DateFormat("HH:mm EEEE, MMM d yyy").format(now);
+  }
+
+  String getShortSystemTime() {
+    var now = DateTime.now();
+    return DateFormat("HH:mm").format(now);
   }
 
   @override
@@ -82,8 +93,8 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                       style: TextStyle(color: Colors.white),
                     );
                   }),
-                  Text(widget.temperature.toString()+'\u2103',
-                      style: TextStyle(color: Colors.white, fontSize: 30.0)),
+                  Text(widget.temperature.toString() + "\u00B0",
+                      style: TextStyle(color: Colors.white, fontSize: 45.0)),
                   Divider(
                     height: 15.0,
                     thickness: 2.0,
@@ -95,8 +106,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                         '+',
                         style: TextStyle(color: Colors.white, fontSize: 30.0),
                       )),
-                  Text(name,
-                      style: TextStyle(color: Colors.white, fontSize: 45.0)),
+                  Text(name, style: TextStyle(color: Colors.white)),
                   Expanded(
                     child: ListView(
                       children: <Widget>[
@@ -105,8 +115,12 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                               style: TextStyle(
                                   color: Colors.white, fontSize: 45.0)),
                           onTap: () {
-                            Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) {
-                              return AddAlarmScreen(name: name,time: time,);
+                            Navigator.of(context, rootNavigator: true)
+                                .push(MaterialPageRoute(builder: (context) {
+                              return AddAlarmScreen(
+                                name: name,
+                                time: time,
+                              );
                             }));
                           },
                         ),

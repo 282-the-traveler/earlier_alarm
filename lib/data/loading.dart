@@ -1,7 +1,9 @@
+import 'package:earlier_alarm/weather.dart';
 import 'package:flutter/material.dart';
 import 'package:earlier_alarm/data/my_position.dart';
 import 'package:earlier_alarm/data/network.dart';
 import 'package:earlier_alarm/current_alarm.dart';
+import 'weather_conditions.dart';
 
 const apikey = '2e61909f3e8052c7fb5f5c84702e9e62';
 
@@ -20,9 +22,9 @@ class _LoadingState extends State<Loading> {
     super.initState();
     getPosition();
   }
-  String weather = 'cloudy';
-  String weatherImage = 'images/cloudy.png';
+  dynamic weatherImage = 'svgs/day.svg';
   int temperature = 25;
+  WeatherConditions weatherConditions = WeatherConditions();
 
   void getPosition() async {
     MyPosition myPosition = MyPosition();
@@ -37,29 +39,20 @@ class _LoadingState extends State<Loading> {
   }
 
   void updateData(dynamic weatherData) {
-    weather = weatherData['weather'][0]['main'];
+    int condition = weatherData['weather'][0]['id'];
     double doubleTemperature = weatherData['main']['temp'];
     temperature = doubleTemperature.round();
-    getWeather(weather);
-  }
-
-  void getWeather(var weather) {
-    if (weather == 'Clouds') {
-      weatherImage = 'svgs/cloudy.svg';
-    } else if (weather == 'Clear') {
-      weatherImage = 'svgs/day.svg';
-    } else if (weather == 'Rain') {
-      weatherImage = 'svgs/rainy.svg';
-    } else if (weather == 'snowy') {
-      weatherImage = 'svgs/snowy.svg';
-    }
-
+    int sunrise = weatherData['sys']['sunrise'];
+    int sunset = weatherData['sys']['sunset'];
+    weatherImage = weatherConditions.getWeatherImage(condition, sunrise, sunset);
     Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) {
       return CurrentAlarmScreen(
-          weather: weather, temperature: temperature, weatherImage: weatherImage,
+        temperature: temperature, weatherImage: weatherImage,
       );
     }));
   }
+
+
 
   @override
   Widget build(BuildContext context) {
