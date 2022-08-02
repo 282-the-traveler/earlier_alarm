@@ -2,6 +2,7 @@ import 'package:earlier_alarm/data/shared_alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddAlarmScreen extends StatefulWidget {
   AddAlarmScreen({this.name, this.time});
@@ -18,6 +19,8 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   var date = '2022-07-29';
   var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
 
+  final TextEditingController _textController = new TextEditingController();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -25,9 +28,10 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     setTime();
   }
 
-  void setTime() {
-    SharedData sharedData = SharedData();
-    sharedData.setTime(widget.name, widget.time, minusMins, date, week);
+  Future<void> setTime() async {
+    final prefs = SharedPreferences.getInstance();
+    // await prefs.setStringList('name', 'time', 'minus', 'date',
+    //     <String>['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']);
   }
 
   showPickerCustomBuilder(BuildContext context) {
@@ -52,58 +56,80 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Image.asset('images/cloudy.png',
-            fit: BoxFit.cover, width: double.infinity, height: double.infinity),
-        Container(
-          child: Column(children: [
-            TextButton(
-                onPressed: () {
-                  showPickerCustomBuilder;
-                },
-                child: Text(
-                  widget.time,
-                  style: TextStyle(color: Colors.white, fontSize: 30.0),
-                )),
-            TextButton(
-                onPressed: () {},
-                child: Text(
-                  widget.name,
-                  style: TextStyle(color: Colors.white, fontSize: 30.0),
-                )),
-          ]),
-        )
-      ],
-      // Row(
-      //   children: [
-      //     ListView(
-      //       children: [
-      //         ListTile(
-      //           title: Text('Sun'),
-      //         ),
-      //         ListTile(
-      //           title: Text('Mon'),
-      //         ),
-      //         ListTile(
-      //           title: Text('Tue'),
-      //         ),
-      //         ListTile(
-      //           title: Text('Wed'),
-      //         ),
-      //         ListTile(
-      //           title: Text('Thur'),
-      //         ),
-      //         ListTile(
-      //           title: Text('Fri'),
-      //         ),
-      //         ListTile(
-      //           title: Text('Sat'),
-      //         )
-      //       ],
-      //     )
-      //   ],
-      // )
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: const Text('Add alarm'),
+        elevation: 0.0,
+        actions: <Widget>[
+          TextButton(
+            // textColor: Colors.white,
+            onPressed: () {},
+            child: const Text("Save"),
+          ),
+        ],
+      ),
+      body: 
+        Stack(
+          children: [
+            Image.asset('images/cloudy.png',
+                fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            Container(
+              child: Column(children: [
+                TextButton(
+                    onPressed: () {
+                      showPickerCustomBuilder;
+                    },
+                    child: Text(
+                      widget.time,
+                      style: TextStyle(color: Colors.white, fontSize: 30.0),
+                    )),
+                TextField(
+                  controller: _textController,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Title',
+                  ),
+                  onChanged: (text) {
+                    setState(() {
+                      //inputText = text;
+                    });
+                  },
+                )
+              ]),
+            )
+          ],
+          // Row(
+          //   children: [
+          //     ListView(
+          //       children: [
+          //         ListTile(
+          //           title: Text('Sun'),
+          //         ),
+          //         ListTile(
+          //           title: Text('Mon'),
+          //         ),
+          //         ListTile(
+          //           title: Text('Tue'),
+          //         ),
+          //         ListTile(
+          //           title: Text('Wed'),
+          //         ),
+          //         ListTile(
+          //           title: Text('Thur'),
+          //         ),
+          //         ListTile(
+          //           title: Text('Fri'),
+          //         ),
+          //         ListTile(
+          //           title: Text('Sat'),
+          //         )
+          //       ],
+          //     )
+          //   ],
+          // )
+        ),
     );
   }
 }

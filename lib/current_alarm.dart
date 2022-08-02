@@ -1,4 +1,5 @@
 import 'package:earlier_alarm/add_alarm.dart';
+import 'package:earlier_alarm/data/earlier_alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timer_builder/timer_builder.dart';
@@ -20,16 +21,16 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   dynamic name = 'noname1';
   dynamic time = '6:30';
 
-  void getTime(String time) {
-    SharedData sharedData = SharedData();
-    sharedData.getTime(time);
-  }
+  // EarlierAlarm getTime(String time) {
+    // SharedData sharedData = SharedData();
+    // return sharedData.getTime(time);
+  // }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getTime(this.name);
+    // getTime(this.name);
   }
 
   String getSystemTime() {
@@ -111,17 +112,15 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                   ),
                   onPressed: () {},
                 ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: Text(name,
-                      style: TextStyle(
-                        color: Colors.white,
-                      )),
-                ),
+
                 Expanded(
                   child: ListView(
                     children: <Widget>[
                       ListTile(
+                        leading: Icon(
+                          Icons.umbrella_sharp,
+                          color: Colors.white,
+                        ),
                         title: Text(time,
                             style: TextStyle(
                               color: Colors.white,
@@ -132,12 +131,12 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                             style: TextStyle(
                               color: Colors.white,
                             )),
-                        leading: Icon(
-                          Icons.umbrella_sharp,
-                          color: Colors.white,
-                        ),
+                        trailing: Text(name,
+                            style: TextStyle(
+                              color: Colors.white,
+                            )),
                         onTap: () {
-                          Navigator.of(context, rootNavigator: true)
+                          Navigator.of(context)
                               .push(MaterialPageRoute(builder: (context) {
                             return AddAlarmScreen(
                               name: name,

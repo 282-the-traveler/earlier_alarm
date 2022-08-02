@@ -2,7 +2,7 @@ import 'package:earlier_alarm/current_alarm.dart';
 import 'package:earlier_alarm/add_alarm.dart';
 import 'package:earlier_alarm/data/loading.dart';
 import 'package:earlier_alarm/google_map.dart';
-import 'package:earlier_alarm/weather.dart';
+import 'package:earlier_alarm/weather_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -36,39 +36,74 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int selectedIndex = 0;
 
-  List<Widget> pages = [
+  List<Widget> _pages = [
     Loading(),
     AddAlarmScreen(),
     WeatherScreen(),
-    GoogleMapScreen()
   ];
+
+  int _currentIndex = 0;
+
+  late List<GlobalKey<NavigatorState>> _navigatorKeyList;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _navigatorKeyList =
+        List.generate(_pages.length, (index) => GlobalKey<NavigatorState>());
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: pages[selectedIndex],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        onTap: onItemTapped,
-        currentIndex: selectedIndex,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.list_alt_rounded), title: Text('List')),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.add), title: Text('Add')),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.wb_sunny_outlined), title: Text('Weather')),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.map_outlined), title: Text('Map')),
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        return !(await _navigatorKeyList[_currentIndex]
+            .currentState!
+            .maybePop());
+      },
+      child: Scaffold(
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _pages.map((page) {
+            int index = _pages.indexOf(page);
+            return Navigator(
+              key: _navigatorKeyList[index],
+              onGenerateRoute: (_) {
+                return MaterialPageRoute(builder: (context) => page);
+              },
+            );
+          }).toList(),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.list_alt_rounded,
+              ),
+              label: 'List',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.add,
+              ),
+              label: 'Add',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.wb_sunny_outlined,
+              ),
+              label: 'Weather',
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  void onItemTapped(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
   }
 }

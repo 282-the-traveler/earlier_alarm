@@ -1,4 +1,4 @@
-import 'package:earlier_alarm/weather.dart';
+import 'package:earlier_alarm/weather_page.dart';
 import 'package:flutter/material.dart';
 import 'package:earlier_alarm/data/my_position.dart';
 import 'package:earlier_alarm/data/network.dart';
@@ -45,7 +45,7 @@ class _LoadingState extends State<Loading> {
     int sunrise = weatherData['sys']['sunrise'];
     int sunset = weatherData['sys']['sunset'];
     weatherImage = weatherConditions.getWeatherImage(condition, sunrise, sunset);
-    Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return CurrentAlarmScreen(
         temperature: temperature, weatherImage: weatherImage,
       );
