@@ -71,76 +71,88 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
           )
         ],
       ),
-      body: Center(
-        child: Stack(
-          children: <Widget>[
-            Image.asset('images/cloudy.png',
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity),
-            Container(
-              padding: EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 150.0,
-                  ),
-                  SvgPicture.asset(widget.weatherImage),
-                  TimerBuilder.periodic(Duration(minutes: 1),
-                      builder: (context) {
-                    return Text(
-                      '${getSystemTime()}',
-                      style: TextStyle(color: Colors.white),
-                    );
-                  }),
-                  Text(widget.temperature.toString() + "\u00B0",
-                      style: TextStyle(color: Colors.white, fontSize: 45.0)),
-                  Divider(
-                    height: 15.0,
-                    thickness: 2.0,
-                    color: Colors.white30,
-                  ),
-                  TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        '+',
-                        style: TextStyle(color: Colors.white, fontSize: 30.0),
-                      )),
-                  Text(name, style: TextStyle(color: Colors.white)),
-                  Expanded(
-                    child: ListView(
-                      children: <Widget>[
-                        ListTile(
-                          title: Text(time,
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 45.0)),
-                          onTap: () {
-                            Navigator.of(context, rootNavigator: true)
-                                .push(MaterialPageRoute(builder: (context) {
-                              return AddAlarmScreen(
-                                name: name,
-                                time: time,
-                              );
-                            }));
-                          },
-                        ),
-                        // showPickerCustomBuilder(context);
-                        ListTile(
-                          title: Text('눈, 비 확률 70% 이상 시 $minute분 전에 알람이 울립니다.',
-                              style: TextStyle(color: Colors.white)),
-                          leading: Icon(
-                            Icons.umbrella_sharp,
-                            color: Colors.white,
-                          ),
-                        )
-                      ],
+      body: Stack(
+        children: <Widget>[
+          Image.asset('images/cloudy.png',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity),
+          Container(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 100.0,
+                ),
+                TimerBuilder.periodic(Duration(minutes: 1), builder: (context) {
+                  return Text(
+                    '${getSystemTime()}',
+                    style: TextStyle(
+                      color: Colors.white,
                     ),
+                  );
+                }),
+                SvgPicture.asset(widget.weatherImage),
+                Text(widget.temperature.toString() + "\u00B0",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 45.0,
+                    )),
+                Divider(
+                  height: 15.0,
+                  thickness: 2.0,
+                  color: Colors.white30,
+                ),
+                IconButton(
+                  alignment: Alignment.centerLeft,
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.white,
                   ),
-                ],
-              ),
-            )
-          ],
-        ),
+                  onPressed: () {},
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(name,
+                      style: TextStyle(
+                        color: Colors.white,
+                      )),
+                ),
+                Expanded(
+                  child: ListView(
+                    children: <Widget>[
+                      ListTile(
+                        title: Text(time,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 45.0,
+                            )),
+                        subtitle: Text(
+                            'When raining or snowing, alarms $minute minutes earlier.',
+                            style: TextStyle(
+                              color: Colors.white,
+                            )),
+                        leading: Icon(
+                          Icons.umbrella_sharp,
+                          color: Colors.white,
+                        ),
+                        onTap: () {
+                          Navigator.of(context, rootNavigator: true)
+                              .push(MaterialPageRoute(builder: (context) {
+                            return AddAlarmScreen(
+                              name: name,
+                              time: time,
+                            );
+                          }));
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
