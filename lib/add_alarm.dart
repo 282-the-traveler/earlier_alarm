@@ -5,9 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddAlarmScreen extends StatefulWidget {
-  AddAlarmScreen({this.name, this.time});
+  AddAlarmScreen({this.title, this.time});
 
-  final dynamic name;
+  final dynamic title;
   final dynamic time;
 
   @override
@@ -15,11 +15,16 @@ class AddAlarmScreen extends StatefulWidget {
 }
 
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
-  var minusMins = '90';
+  var id = '9:30\-10';
+  var title = 'untitled';
+  var time = '9:30';
+  var minusMins = '10';
   var date = '2022-07-29';
   var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
 
-  final TextEditingController _textController = new TextEditingController();
+  TextEditingController _textController = TextEditingController();
+
+  String inputText = 'noname';
 
   @override
   void initState() {
@@ -29,7 +34,13 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   }
 
   Future<void> setTime() async {
-    final prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String encodedData = SharedData.encode([
+      SharedData(id: id, title: title, time: time, minusMins: minusMins, date: date)
+    ]);
+
+    await prefs.setString(id, encodedData);
+    print(encodedData);
     // await prefs.setStringList('name', 'time', 'minus', 'date',
     //     <String>['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']);
   }
@@ -64,12 +75,15 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
         actions: <Widget>[
           TextButton(
             // textColor: Colors.white,
-            onPressed: () {},
+            onPressed: () {
+              // **sharedpreference에 담기
+              setTime();
+            },
             child: const Text("Save"),
           ),
         ],
       ),
-      body: 
+      body:
         Stack(
           children: [
             Image.asset('images/cloudy.png',
@@ -93,7 +107,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                   ),
                   onChanged: (text) {
                     setState(() {
-                      //inputText = text;
+                      inputText = text;
                     });
                   },
                 )

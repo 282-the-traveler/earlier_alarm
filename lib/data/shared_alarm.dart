@@ -1,36 +1,55 @@
+import 'dart:convert';
+
 import 'package:earlier_alarm/data/earlier_alarm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedData {
-  String name ='noname';
+  String id = '9:30\-10';
+  String title = 'untitled';
   String time = '9:30';
   String minusMins = '10';
   String date = '20220731';
-  var week = {};
 
+  // var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
 
+  SharedData({
+    required this.id,
+    required this.title,
+    required this.time,
+    required this.minusMins,
+    required this.date,
+  });
 
-  final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+  // required this.week});
 
+  static Map<String, dynamic> toMap(SharedData sharedData) => {
+        'id': sharedData.id,
+        'title': sharedData.title,
+        'time': sharedData.time,
+        'minusMins': sharedData.minusMins,
+        'date': sharedData.date,
+        // 'week': sharedData.week,
+      };
 
-
-
-  // EarlierAlarm getTime _pref.then(SharedPreferences prefs){
-  //   if (time == prefs.getString(time)) {
-  //     prefs.getString(name);
-  //     prefs.getString(minusMins);
-  //     prefs.getString(date);
-  //   }
-  //   return EarlierAlarm(name, time, minusMins, date, week);
-  // }
-
-  setBackground(String background) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('background', background);
+  factory SharedData.fromJson(Map<String, dynamic> jsonData) {
+    return SharedData(
+      id: jsonData['id'],
+      title: jsonData['title'],
+      time: jsonData['time'],
+      minusMins: jsonData['minusMins'],
+      date: jsonData['date'],
+      // week: jsonData['week'],
+    );
   }
 
-  getBackground() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.getString('background');
-  }
+  static String encode(List<SharedData> sharedData) => json.encode(
+        sharedData
+            .map<Map<String, dynamic>>((music) => SharedData.toMap(music))
+            .toList(),
+      );
+
+  static List<SharedData> decode(String musics) =>
+      (json.decode(musics) as List<dynamic>)
+          .map<SharedData>((item) => SharedData.fromJson(item))
+          .toList();
 }
