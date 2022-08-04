@@ -115,7 +115,15 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                     Icons.add,
                     color: Colors.white,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return AddAlarmScreen(
+                        title: title,
+                        time: time,
+                      );
+                    }));
+                  },
                 ),
                 Expanded(
                   child: ListView.builder(
