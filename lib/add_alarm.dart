@@ -29,7 +29,6 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    setTime();
   }
 
   Future<void> setTime() async {
@@ -45,19 +44,25 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     //     <String>['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']);
   }
 
-  String _selectedTime = '9:30';
-
   Future<void> _showTimePicker() async {
-    final TimeOfDay? result =
-    await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final TimeOfDay? result = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
     if (result != null) {
       setState(() {
-        _selectedTime = result.format(context);
+        time = result.format(context);
       });
     }
   }
 
-
+  String getTextTime() {
+    if (time == null ) {
+      return time = TimeOfDay.now().toString();
+    } else {
+      return time;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
