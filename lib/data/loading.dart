@@ -15,13 +15,13 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getPosition();
   }
+
   dynamic weatherImage = 'svgs/day.svg';
   int temperature = 25;
   WeatherConditions weatherConditions = WeatherConditions();
@@ -44,18 +44,22 @@ class _LoadingState extends State<Loading> {
     temperature = doubleTemperature.round();
     int sunrise = weatherData['sys']['sunrise'];
     int sunset = weatherData['sys']['sunset'];
-    weatherImage = weatherConditions.getWeatherImage(condition, sunrise, sunset);
+    weatherImage =
+        weatherConditions.getWeatherImage(condition, sunrise, sunset);
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return CurrentAlarmScreen(
-        temperature: temperature, weatherImage: weatherImage,
+        temperature: temperature,
+        weatherImage: weatherImage,
       );
     }));
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return CircularProgressIndicator();
+    return SizedBox(
+      height: 200.0,
+      width: 200.0,
+      child: CircularProgressIndicator(),
+    );
   }
 }

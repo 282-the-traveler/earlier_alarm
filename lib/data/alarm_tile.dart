@@ -28,7 +28,7 @@ class _AlarmTileState extends State<AlarmTile> {
             fontSize: 45.0,
           )),
       subtitle: Text(
-          'When raining or snowing, alarms' +
+          'When raining or snowing, alarms ' +
               widget._sharedData.minusMins +
               'minutes earlier.',
           style: TextStyle(

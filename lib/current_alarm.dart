@@ -19,23 +19,25 @@ class CurrentAlarmScreen extends StatefulWidget {
 }
 
 class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
+  String id = '9:30-10';
   String title = 'noname';
   String time = '9:30';
   String minusMins = '10';
   String date = '20220802';
   List<SharedData> sharedDataList = [];
-  void getTime(String id) async {
+
+  Future<List<SharedData>> getTime(String id) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? sharedJsonData = await prefs.getString(id);
 
-    sharedDataList = SharedData.decode(sharedJsonData!);
+    return sharedDataList = SharedData.decode(sharedJsonData!);
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getTime(this.title);
+
   }
 
   String getSystemTime() {
@@ -126,42 +128,14 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                   },
                 ),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: sharedDataList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return AlarmTile(sharedDataList[index]);
-                    },
-                    // children: <Widget>[
-                    //   ListTile(
-                    //     leading: Icon(
-                    //       Icons.umbrella_sharp,
-                    //       color: Colors.white,
-                    //     ),
-                    //     title: Text(time,
-                    //         style: TextStyle(
-                    //           color: Colors.white,
-                    //           fontSize: 45.0,
-                    //         )),
-                    //     subtitle: Text(
-                    //         'When raining or snowing, alarms'+ minusMins +'minutes earlier.',
-                    //         style: TextStyle(
-                    //           color: Colors.white,
-                    //         )),
-                    //     trailing: Text(title,
-                    //         style: TextStyle(
-                    //           color: Colors.white,
-                    //         )),
-                    //     onTap: () {
-                    //       Navigator.of(context)
-                    //           .push(MaterialPageRoute(builder: (context) {
-                    //         return AddAlarmScreen(
-                    //           title: title,
-                    //           time: time,
-                    //         );
-                    //       }));
-                    //     },
-                    //   ),
-                    // ],
+                  child: FutureBuilder<List<SharedData>>(
+                    future: getTime(id),
+                    builder: (context, snapshot) => ListView.builder(
+                        itemCount: sharedDataList.length,
+                        itemBuilder: (context, index) {
+                          return AlarmTile(sharedDataList[index]);
+                        },
+                      ),
                   ),
                 ),
               ],

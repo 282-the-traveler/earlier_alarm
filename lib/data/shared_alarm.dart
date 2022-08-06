@@ -1,14 +1,13 @@
 import 'dart:convert';
 
-import 'package:earlier_alarm/data/earlier_alarm.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 class SharedData {
+  String sharedDataName = 'earlierAlarm';
   String id = '9:30\-10';
   String title = 'untitled';
   String time = '9:30';
   String minusMins = '10';
   String date = '20220731';
+  bool isReady = false;
 
   // var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
 
@@ -44,12 +43,12 @@ class SharedData {
 
   static String encode(List<SharedData> sharedData) => json.encode(
         sharedData
-            .map<Map<String, dynamic>>((music) => SharedData.toMap(music))
+            .map<Map<String, dynamic>>((id) => SharedData.toMap(id))
             .toList(),
       );
 
-  static List<SharedData> decode(String musics) =>
-      (json.decode(musics) as List<dynamic>)
+  static List<SharedData> decode(String id) =>
+      (json.decode(id) as List<dynamic>)
           .map<SharedData>((item) => SharedData.fromJson(item))
           .toList();
 }
