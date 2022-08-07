@@ -19,11 +19,11 @@ class _AlarmTileState extends State<AlarmTile> {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Text(widget._sharedData.title,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           )),
       title: Text(widget._sharedData.time,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 45.0,
           )),
@@ -31,7 +31,7 @@ class _AlarmTileState extends State<AlarmTile> {
           'When raining or snowing, alarms ' +
               widget._sharedData.minusMins +
               'minutes earlier.',
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           )),
       trailing: Switch(
@@ -52,6 +52,7 @@ class _AlarmTileState extends State<AlarmTile> {
           );
         }));
       },
+      onLongPress: () {},
     );
   }
 }

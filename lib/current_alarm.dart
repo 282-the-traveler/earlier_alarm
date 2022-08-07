@@ -30,7 +30,6 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? sharedJsonData = prefs.getString(sharedDataName);
     return sharedDataList = SharedData.decode(sharedJsonData!);
-    print(sharedJsonData);
   }
 
   @override
@@ -88,31 +87,31 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
             padding: EdgeInsets.all(20.0),
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 100.0,
                 ),
                 TimerBuilder.periodic(Duration(minutes: 1), builder: (context) {
                   return Text(
-                    '${getSystemTime()}',
-                    style: TextStyle(
+                    getSystemTime(),
+                    style: const TextStyle(
                       color: Colors.white,
                     ),
                   );
                 }),
                 SvgPicture.asset(widget.weatherImage),
                 Text(widget.temperature.toString() + "\u00B0",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 45.0,
                     )),
-                Divider(
+                const Divider(
                   height: 15.0,
                   thickness: 2.0,
                   color: Colors.white30,
                 ),
                 IconButton(
                   alignment: Alignment.centerLeft,
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.add,
                     color: Colors.white,
                   ),
@@ -120,8 +119,8 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) {
                       return AddAlarmScreen(
-                        title: title,
-                        time: time,
+                        title: 'earlier_alarm',
+                        time: '24:00 PM',
                         isOn: false,
                         index: 9999,
                       );

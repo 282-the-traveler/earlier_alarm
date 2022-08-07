@@ -65,7 +65,6 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     final String encodedData = SharedData.encode(sharedDataList);
 
     await prefs.setString(sharedDataName, encodedData);
-    print(encodedData);
     // await prefs.setStringList('name', 'time', 'minus', 'date',
     //     <String>['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']);
     Navigator.pop(context);
@@ -84,15 +83,17 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   }
 
   dynamic getTextTime() {
-    if (widget.time == null) {
+    if (widget.time == '24:00 PM') {
       return TimeOfDay.now();
+      print('24:00 PM');
     } else {
-      return TimeOfDay.fromDateTime(DateTime.now());
+      return widget.time;
+      print('04:51 PM');
     }
   }
 
   String getTextTitle() {
-    if (widget.title == null) {
+    if (widget.title == 'earlier_alarm') {
       return '';
     } else {
       return widget.title;
@@ -124,6 +125,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               width: double.infinity,
               height: double.infinity),
           Container(
+            padding: EdgeInsets.all(20.0),
             child: Column(children: [
               TextButton(
                   onPressed: () {
@@ -131,17 +133,25 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                   },
                   child: Text(
                     widget.time,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 30.0,
                     ),
                   )),
               TextField(
+                cursorColor: Colors.white,
+                maxLength: 10,
                 controller: _textController,
                 obscureText: false,
-                decoration: InputDecoration(
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Title',
+                  helperStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(color: Colors.white),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  )
                 ),
                 onChanged: (text) {
                   setState(() {
@@ -155,7 +165,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                   },
                   child: Text(
                     minusMins,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 30.0,
                     ),

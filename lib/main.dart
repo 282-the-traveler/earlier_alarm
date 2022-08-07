@@ -20,14 +20,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.lightBlue,
       ),
-      home: const MyHomePage(title: 'Earlier alarm'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -38,7 +37,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _pages = [
     Loading(),
-    AddAlarmScreen(isOn: false, index: 9999,),
+    AddAlarmScreen(
+      title: 'earlier_alarm',
+      time: '24:00 PM',
+      isOn: false,
+      index: 9999,
+    ),
     WeatherScreen(),
   ];
 
