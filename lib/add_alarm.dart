@@ -1,29 +1,27 @@
-import 'package:earlier_alarm/data/shared_alarm.dart';
+import 'package:earlier_alarm/data/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddAlarmScreen extends StatefulWidget {
-  AddAlarmScreen({this.title, this.time});
+  AddAlarmScreen({this.title, this.time, required this.isOn});
 
-  final dynamic title;
-  final dynamic time;
+  dynamic title;
+  dynamic time;
+  bool isOn;
 
   @override
   State<AddAlarmScreen> createState() => _AddAlarmScreenState();
 }
 
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
-  var id = '9:30\-10';
-  var title = 'untitled';
-  var time = '9:30';
+  String sharedDataName = 'EARLIER_ALARM';
+  var id = '9:30 PM\-10';
   var minusMins = '10';
   var date = '2022-07-29';
   var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
 
-  TextEditingController _textController = TextEditingController();
-
-  String inputText = 'noname';
+  late TextEditingController _textController = TextEditingController(text: getTextTitle());
 
   @override
   void initState() {
@@ -33,12 +31,24 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   Future<void> setTime() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    id = widget.time + '\-' + minusMins;
+
+    final String? sharedJsonData = prefs.getString(sharedDataName);
+    List<SharedData> sharedDataList = SharedData.decode(sharedJsonData!);
+
     final String encodedData = SharedData.encode([
       SharedData(
-          id: id, title: title, time: time, minusMins: minusMins, date: date)
+        sharedDataName: sharedDataName,
+        id: id,
+        title: widget.title,
+        time: widget.time,
+        minusMins: minusMins,
+        date: date,
+        isOn: widget.isOn,
+      )
     ]);
 
-    await prefs.setString(id, encodedData);
+    await prefs.setString(sharedDataName, encodedData);
     print(encodedData);
     // await prefs.setStringList('name', 'time', 'minus', 'date',
     //     <String>['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']);
@@ -47,20 +57,28 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   Future<void> _showTimePicker() async {
     final TimeOfDay? result = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: getTextTime(),
     );
     if (result != null) {
       setState(() {
-        time = result.format(context);
+        widget.time = result.format(context);
       });
     }
   }
 
-  String getTextTime() {
-    if (time == null ) {
-      return time = TimeOfDay.now().toString();
+  dynamic getTextTime() {
+    if (widget.time == null) {
+      return TimeOfDay.now();
     } else {
-      return time;
+      return TimeOfDay.fromDateTime(DateTime.now());
+    }
+  }
+
+  String getTextTitle() {
+    if (widget.title == null) {
+      return '';
+    } else {
+      return widget.title;
     }
   }
 
@@ -95,7 +113,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                     _showTimePicker();
                   },
                   child: Text(
-                    time,
+                    widget.time,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 30.0,
@@ -110,7 +128,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                 ),
                 onChanged: (text) {
                   setState(() {
-                    inputText = text;
+                    widget.title = text;
                   });
                 },
               ),

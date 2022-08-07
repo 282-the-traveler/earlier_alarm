@@ -56,7 +56,7 @@ class _LoadingState extends State<Loading> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return const SizedBox(
       height: 200.0,
       width: 200.0,
       child: CircularProgressIndicator(),

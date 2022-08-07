@@ -1,12 +1,11 @@
-import 'package:earlier_alarm/add_alarm.dart';
-import 'package:earlier_alarm/data/alarm_tile.dart';
-import 'package:earlier_alarm/data/earlier_alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_builder/timer_builder.dart';
 import 'package:intl/intl.dart';
-import 'package:earlier_alarm/data/shared_alarm.dart';
+import 'package:earlier_alarm/data/shared_data.dart';
+import 'package:earlier_alarm/add_alarm.dart';
+import 'package:earlier_alarm/data/alarm_tile.dart';
 
 class CurrentAlarmScreen extends StatefulWidget {
   CurrentAlarmScreen({this.temperature, this.weatherImage});
@@ -19,17 +18,17 @@ class CurrentAlarmScreen extends StatefulWidget {
 }
 
 class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
-  String id = '9:30-10';
-  String title = 'noname';
-  String time = '9:30';
+  String sharedDataName = 'EARLIER_ALARM';
+  String id = '9:30 PM-10';
+  String title = 'untitled';
+  String time = '9:30 PM';
   String minusMins = '10';
-  String date = '20220802';
+  String date = '2022-08-06';
   List<SharedData> sharedDataList = [];
 
-  Future<List<SharedData>> getTime(String id) async {
+  Future<List<SharedData>> getTime() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? sharedJsonData = await prefs.getString(id);
-
+    final String? sharedJsonData = prefs.getString(sharedDataName);
     return sharedDataList = SharedData.decode(sharedJsonData!);
   }
 
@@ -37,7 +36,6 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
   }
 
   String getSystemTime() {
@@ -121,21 +119,20 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) {
                       return AddAlarmScreen(
-                        title: title,
-                        time: time,
+                        isOn: false,
                       );
                     }));
                   },
                 ),
                 Expanded(
                   child: FutureBuilder<List<SharedData>>(
-                    future: getTime(id),
+                    future: getTime(),
                     builder: (context, snapshot) => ListView.builder(
-                        itemCount: sharedDataList.length,
-                        itemBuilder: (context, index) {
-                          return AlarmTile(sharedDataList[index]);
-                        },
-                      ),
+                      itemCount: sharedDataList.length,
+                      itemBuilder: (context, index) {
+                        return AlarmTile(sharedDataList[index]);
+                      },
+                    ),
                   ),
                 ),
               ],

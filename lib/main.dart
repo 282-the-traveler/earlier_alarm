@@ -36,9 +36,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int selectedIndex = 0;
 
-  List<Widget> _pages = [
+  final List<Widget> _pages = [
     Loading(),
-    AddAlarmScreen(),
+    AddAlarmScreen(isOn: false,),
     WeatherScreen(),
   ];
 

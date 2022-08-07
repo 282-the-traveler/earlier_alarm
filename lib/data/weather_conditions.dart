@@ -3,7 +3,6 @@ class WeatherConditions {
 
   dynamic getWeatherImage(int condition, int sunrise, int sunset) {
     var unixTimestamp = DateTime.now().millisecondsSinceEpoch/ 1000;
-    print ('unixTimestamp::::::::::::'+unixTimestamp.toString());
     if (condition < 300) {
       return 'svgs/thunder.svg';
     } else if (condition < 600) {
