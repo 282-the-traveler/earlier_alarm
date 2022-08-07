@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _pages = [
     Loading(),
-    AddAlarmScreen(isOn: false,),
+    AddAlarmScreen(isOn: false, index: 9999,),
     WeatherScreen(),
   ];
 

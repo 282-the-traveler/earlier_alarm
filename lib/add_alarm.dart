@@ -4,11 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddAlarmScreen extends StatefulWidget {
-  AddAlarmScreen({this.title, this.time, required this.isOn});
+  AddAlarmScreen(
+      {this.title, this.time, required this.isOn, required this.index});
 
   dynamic title;
   dynamic time;
   bool isOn;
+  int index;
 
   @override
   State<AddAlarmScreen> createState() => _AddAlarmScreenState();
@@ -20,8 +22,9 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   var minusMins = '10';
   var date = '2022-07-29';
   var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
-
-  late TextEditingController _textController = TextEditingController(text: getTextTitle());
+  List<SharedData> sharedDataList = [];
+  late TextEditingController _textController =
+      TextEditingController(text: getTextTitle());
 
   @override
   void initState() {
@@ -34,10 +37,11 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     id = widget.time + '\-' + minusMins;
 
     final String? sharedJsonData = prefs.getString(sharedDataName);
-    List<SharedData> sharedDataList = SharedData.decode(sharedJsonData!);
+    sharedDataList = SharedData.decode(sharedJsonData!);
 
-    final String encodedData = SharedData.encode([
-      SharedData(
+    if (sharedJsonData != null) {
+      print(sharedJsonData);
+      sharedDataList[widget.index] = SharedData(
         sharedDataName: sharedDataName,
         id: id,
         title: widget.title,
@@ -45,13 +49,26 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
         minusMins: minusMins,
         date: date,
         isOn: widget.isOn,
-      )
-    ]);
+      );
+    } else {
+      sharedDataList.add(SharedData(
+        sharedDataName: sharedDataName,
+        id: id,
+        title: widget.title,
+        time: widget.time,
+        minusMins: minusMins,
+        date: date,
+        isOn: widget.isOn,
+      ));
+    }
+
+    final String encodedData = SharedData.encode(sharedDataList);
 
     await prefs.setString(sharedDataName, encodedData);
     print(encodedData);
     // await prefs.setStringList('name', 'time', 'minus', 'date',
     //     <String>['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']);
+    Navigator.pop(context);
   }
 
   Future<void> _showTimePicker() async {

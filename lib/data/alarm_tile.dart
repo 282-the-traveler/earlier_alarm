@@ -3,9 +3,10 @@ import 'package:earlier_alarm/data/shared_data.dart';
 import 'package:flutter/material.dart';
 
 class AlarmTile extends StatefulWidget {
-  AlarmTile(this._sharedData);
+  AlarmTile(this._sharedData, this.index);
 
   final SharedData _sharedData;
+  int index;
 
   @override
   State<AlarmTile> createState() => _AlarmTileState();
@@ -47,6 +48,7 @@ class _AlarmTileState extends State<AlarmTile> {
             title: widget._sharedData.title,
             time: widget._sharedData.time,
             isOn: isOn,
+            index: widget.index,
           );
         }));
       },

@@ -30,6 +30,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? sharedJsonData = prefs.getString(sharedDataName);
     return sharedDataList = SharedData.decode(sharedJsonData!);
+    print(sharedJsonData);
   }
 
   @override
@@ -119,7 +120,10 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) {
                       return AddAlarmScreen(
+                        title: title,
+                        time: time,
                         isOn: false,
+                        index: 9999,
                       );
                     }));
                   },
@@ -130,7 +134,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                     builder: (context, snapshot) => ListView.builder(
                       itemCount: sharedDataList.length,
                       itemBuilder: (context, index) {
-                        return AlarmTile(sharedDataList[index]);
+                        return AlarmTile(sharedDataList[index], index);
                       },
                     ),
                   ),
