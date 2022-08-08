@@ -41,6 +41,7 @@ dependencies:
   timer_builder: ^2.0.0
   intl: ^0.17.0
   shared_preferences: ^2.0.7
+  numberpicker: ^2.1.1
 
 dev_dependencies:
   flutter_test:

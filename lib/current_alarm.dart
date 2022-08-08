@@ -22,7 +22,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String id = '9:30 PM-10';
   String title = 'untitled';
   String time = '9:30 PM';
-  String minusMins = '10';
+  int minusMins = 10;
   String date = '2022-08-06';
   List<SharedData> sharedDataList = [];
 
@@ -122,7 +122,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                         title: 'earlier_alarm',
                         time: '24:00 PM',
                         isOn: false,
-                        index: 9999,
+                        index: 99,
                       );
                     }));
                   },

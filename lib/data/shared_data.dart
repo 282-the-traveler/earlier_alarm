@@ -5,7 +5,7 @@ class SharedData {
   String id = '9:30\-10';
   String title = 'untitled';
   String time = '9:30';
-  String minusMins = '10';
+  int minusMins = 10;
   String date = '2022-07-31';
   bool isOn = false;
 

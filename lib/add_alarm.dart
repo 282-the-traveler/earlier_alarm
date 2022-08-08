@@ -2,6 +2,7 @@ import 'package:earlier_alarm/data/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 class AddAlarmScreen extends StatefulWidget {
   AddAlarmScreen(
@@ -19,7 +20,7 @@ class AddAlarmScreen extends StatefulWidget {
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
   var id = '9:30 PM\-10';
-  var minusMins = '10';
+  var minusMins = 10;
   var date = '2022-07-29';
   var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
   List<SharedData> sharedDataList = [];
@@ -38,8 +39,20 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
     final String? sharedJsonData = prefs.getString(sharedDataName);
     sharedDataList = SharedData.decode(sharedJsonData!);
+    print(sharedJsonData);
 
-    if (sharedJsonData != null) {
+    if (widget.index == 99) {
+      print("this is 99");
+      sharedDataList.add(SharedData(
+        sharedDataName: sharedDataName,
+        id: id,
+        title: widget.title,
+        time: widget.time,
+        minusMins: minusMins,
+        date: date,
+        isOn: widget.isOn,
+      ));
+    } else if (0 <= widget.index && widget.index < 99) {
       print(sharedJsonData);
       sharedDataList[widget.index] = SharedData(
         sharedDataName: sharedDataName,
@@ -50,16 +63,6 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
         date: date,
         isOn: widget.isOn,
       );
-    } else {
-      sharedDataList.add(SharedData(
-        sharedDataName: sharedDataName,
-        id: id,
-        title: widget.title,
-        time: widget.time,
-        minusMins: minusMins,
-        date: date,
-        isOn: widget.isOn,
-      ));
     }
 
     final String encodedData = SharedData.encode(sharedDataList);
@@ -67,13 +70,13 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     await prefs.setString(sharedDataName, encodedData);
     // await prefs.setStringList('name', 'time', 'minus', 'date',
     //     <String>['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']);
-    Navigator.pop(context);
+    // Navigator.pop(context);
   }
 
   Future<void> _showTimePicker() async {
     final TimeOfDay? result = await showTimePicker(
       context: context,
-      initialTime: getTextTime(),
+      initialTime: TimeOfDay.now(),
     );
     if (result != null) {
       setState(() {
@@ -87,7 +90,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
       return TimeOfDay.now();
       print('24:00 PM');
     } else {
-      return widget.time;
+      return TimeOfDay.now();
       print('04:51 PM');
     }
   }
@@ -127,6 +130,14 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
           Container(
             padding: EdgeInsets.all(20.0),
             child: Column(children: [
+              Container(
+                alignment: Alignment.centerLeft,
+                child: const Text('Time for alarm',
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      color: Colors.white,
+                    )),
+              ),
               TextButton(
                   onPressed: () {
                     _showTimePicker();
@@ -138,6 +149,15 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                       fontSize: 30.0,
                     ),
                   )),
+              Container(
+                alignment: Alignment.centerLeft,
+                height: 50.0,
+                child: const Text('Title',
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      color: Colors.white,
+                    )),
+              ),
               TextField(
                 cursorColor: Colors.white,
                 maxLength: 10,
@@ -145,31 +165,58 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                 obscureText: false,
                 style: const TextStyle(color: Colors.white),
                 decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Title',
-                  helperStyle: TextStyle(color: Colors.white),
-                  hintStyle: TextStyle(color: Colors.white),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  )
-                ),
+                    border: OutlineInputBorder(),
+                    helperStyle: TextStyle(color: Colors.white),
+                    hintStyle: TextStyle(color: Colors.white),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    )),
                 onChanged: (text) {
                   setState(() {
                     widget.title = text;
                   });
                 },
               ),
-              TextButton(
-                  onPressed: () {
-                    _showTimePicker();
-                  },
-                  child: Text(
-                    minusMins,
-                    style: const TextStyle(
+              Container(
+                alignment: Alignment.centerLeft,
+                height: 50.0,
+                child: const Text('How much earlier?',
+                    style: TextStyle(
+                      fontSize: 15.0,
                       color: Colors.white,
+                    )),
+              ),
+              NumberPicker(
+                textStyle: (const TextStyle(
+                fontSize: 15.0,
+                color: Colors.white,
+                )),
+                value: minusMins,
+                minValue: 0,
+                maxValue: 60,
+                onChanged: (value) => setState(() => minusMins = value),
+              ),
+              Row(
+                children: [
+                  const Text('When raining or snowing, alarms ',
+                      style: TextStyle(
+                        fontSize: 15.0,
+                        color: Colors.white,
+                      )),
+                  Text(
+                    '$minusMins',
+                    style: const TextStyle(
                       fontSize: 30.0,
+                      color: Colors.white,
                     ),
-                  )),
+                  ),
+                  const Text(' minutes earlier.',
+                      style: TextStyle(
+                        fontSize: 15.0,
+                        color: Colors.white,
+                      ))
+                ],
+              )
             ]),
           )
         ],

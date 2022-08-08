@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
       title: 'earlier_alarm',
       time: '24:00 PM',
       isOn: false,
-      index: 9999,
+      index: 99,
     ),
     WeatherScreen(),
   ];
