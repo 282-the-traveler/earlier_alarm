@@ -1,15 +1,19 @@
 import 'package:earlier_alarm/data/shared_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 class AddAlarmScreen extends StatefulWidget {
   AddAlarmScreen(
-      {this.title, this.time, required this.isOn, required this.index});
+      {required this.title,
+      required this.time,
+      required this.isOn,
+      required this.index});
 
-  dynamic title;
-  dynamic time;
+  String title;
+  String time;
   bool isOn;
   int index;
 
@@ -19,13 +23,15 @@ class AddAlarmScreen extends StatefulWidget {
 
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
-  var id = '9:30 PM\-10';
-  var minusMins = 10;
-  var date = '2022-07-29';
+  String id = '9:30 PM\-10';
+  int minusMins = 10;
+  String date = '2022-07-29';
   var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
   List<SharedData> sharedDataList = [];
   late TextEditingController _textController =
       TextEditingController(text: getTextTitle());
+
+  List<bool> isSelected = List.generate(7, (index) => false);
 
   @override
   void initState() {
@@ -35,41 +41,31 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   Future<void> setTime() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    id = widget.time + '\-' + minusMins;
+    id = widget.time + '\-' + minusMins.toString();
 
     final String? sharedJsonData = prefs.getString(sharedDataName);
     sharedDataList = SharedData.decode(sharedJsonData!);
     print(sharedJsonData);
 
+    SharedData sharedData = SharedData(
+      sharedDataName: sharedDataName,
+      id: id,
+      title: widget.title,
+      time: widget.time,
+      minusMins: minusMins,
+      date: date,
+      isOn: true,
+    );
     if (widget.index == 99) {
-      print("this is 99");
-      sharedDataList.add(SharedData(
-        sharedDataName: sharedDataName,
-        id: id,
-        title: widget.title,
-        time: widget.time,
-        minusMins: minusMins,
-        date: date,
-        isOn: widget.isOn,
-      ));
+      sharedDataList.add(sharedData);
     } else if (0 <= widget.index && widget.index < 99) {
       print(sharedJsonData);
-      sharedDataList[widget.index] = SharedData(
-        sharedDataName: sharedDataName,
-        id: id,
-        title: widget.title,
-        time: widget.time,
-        minusMins: minusMins,
-        date: date,
-        isOn: widget.isOn,
-      );
+      sharedDataList[widget.index] = sharedData;
     }
 
     final String encodedData = SharedData.encode(sharedDataList);
 
     await prefs.setString(sharedDataName, encodedData);
-    // await prefs.setStringList('name', 'time', 'minus', 'date',
-    //     <String>['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']);
     // Navigator.pop(context);
   }
 
@@ -85,13 +81,11 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     }
   }
 
-  dynamic getTextTime() {
+  String getTextTime() {
     if (widget.time == '24:00 PM') {
-      return TimeOfDay.now();
-      print('24:00 PM');
+      return TimeOfDay.now().format(context);
     } else {
-      return TimeOfDay.now();
-      print('04:51 PM');
+      return widget.time;
     }
   }
 
@@ -128,7 +122,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               width: double.infinity,
               height: double.infinity),
           Container(
-            padding: EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(children: [
               Container(
                 alignment: Alignment.centerLeft,
@@ -143,7 +137,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                     _showTimePicker();
                   },
                   child: Text(
-                    widget.time,
+                    getTextTime(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 30.0,
@@ -177,6 +171,44 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                   });
                 },
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ToggleButtons(
+                    children: const [
+                      Text('Sun'),
+                      Text('Mon'),
+                      Text('Tue'),
+                      Text('Wed'),
+                      Text('Thur'),
+                      Text('Fri'),
+                      Text('Sat')
+                    ],
+                    onPressed: (int index) {
+                      setState(() {
+                        isSelected[index] = !isSelected[index];
+                      });
+                    },
+                    isSelected: isSelected,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Future<DateTime?> selectedDate = showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2022),
+                        lastDate: DateTime(2050),
+                      );
+                      selectedDate.then((dateTime) {
+                        setState(() {
+                          date = DateFormat('yyyy-MM-dd').format(dateTime!);
+                        });
+                      });
+                    },
+                    icon: const Icon(Icons.calendar_today_outlined),
+                  ),
+                ],
+              ),
               Container(
                 alignment: Alignment.centerLeft,
                 height: 50.0,
@@ -188,8 +220,8 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               ),
               NumberPicker(
                 textStyle: (const TextStyle(
-                fontSize: 15.0,
-                color: Colors.white,
+                  fontSize: 15.0,
+                  color: Colors.white,
                 )),
                 value: minusMins,
                 minValue: 0,
@@ -197,10 +229,10 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                 onChanged: (value) => setState(() => minusMins = value),
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text('When raining or snowing, alarms ',
                       style: TextStyle(
-                        fontSize: 15.0,
                         color: Colors.white,
                       )),
                   Text(
@@ -212,43 +244,13 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                   ),
                   const Text(' minutes earlier.',
                       style: TextStyle(
-                        fontSize: 15.0,
                         color: Colors.white,
-                      ))
+                      )),
                 ],
-              )
+              ),
             ]),
           )
         ],
-        // Row(
-        //   children: [
-        //     ListView(
-        //       children: [
-        //         ListTile(
-        //           title: Text('Sun'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Mon'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Tue'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Wed'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Thur'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Fri'),
-        //         ),
-        //         ListTile(
-        //           title: Text('Sat'),
-        //         )
-        //       ],
-        //     )
-        //   ],
-        // )
       ),
     );
   }
