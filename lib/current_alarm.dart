@@ -1,3 +1,4 @@
+import 'package:earlier_alarm/data/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,15 +64,16 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         leading: IconButton(
-          icon: Icon(Icons.near_me),
+          icon: const Icon(Icons.near_me),
           onPressed: () {},
           iconSize: 30.0,
-          color: Colors.white,
+          color: Colors.transparent,
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.location_searching),
+            onPressed: () {
+            },
+            icon: const Icon(Icons.location_searching),
             iconSize: 30.0,
             color: Colors.white,
           )

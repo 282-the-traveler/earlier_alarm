@@ -7,9 +7,8 @@ class SharedData {
   String time = '9:30';
   int minusMins = 10;
   String date = '2022-07-31';
+  // List<bool> selectedWeek = [];
   bool isOn = false;
-
-  // var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
 
   SharedData({
     required this.sharedDataName,
@@ -18,6 +17,7 @@ class SharedData {
     required this.time,
     required this.minusMins,
     required this.date,
+    // required this.selectedWeek,
     required this.isOn,
   });
 
@@ -30,6 +30,7 @@ class SharedData {
         'time': sharedData.time,
         'minusMins': sharedData.minusMins,
         'date': sharedData.date,
+        // 'selectedWeek': sharedData.selectedWeek,
         'isOn': sharedData.isOn,
         // 'week': sharedData.week,
       };
@@ -42,6 +43,7 @@ class SharedData {
       time: jsonData['time'],
       minusMins: jsonData['minusMins'],
       date: jsonData['date'],
+      // selectedWeek: jsonData['selectedWeek'],
       isOn: jsonData['isOn'],
       // week: jsonData['week'],
     );

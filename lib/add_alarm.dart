@@ -26,12 +26,20 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   String id = '9:30 PM\-10';
   int minusMins = 10;
   String date = '2022-07-29';
-  var week = {'Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'};
+  final tomorrow = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day + 1,
+  );
+
+  List<bool> selectedWeek = List.generate(
+    7,
+    (index) => false,
+  );
   List<SharedData> sharedDataList = [];
+
   late TextEditingController _textController =
       TextEditingController(text: getTextTitle());
-
-  List<bool> isSelected = List.generate(7, (index) => false);
 
   @override
   void initState() {
@@ -43,10 +51,6 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     id = widget.time + '\-' + minusMins.toString();
 
-    final String? sharedJsonData = prefs.getString(sharedDataName);
-    sharedDataList = SharedData.decode(sharedJsonData!);
-    print(sharedJsonData);
-
     SharedData sharedData = SharedData(
       sharedDataName: sharedDataName,
       id: id,
@@ -54,19 +58,25 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
       time: widget.time,
       minusMins: minusMins,
       date: date,
+      // selectedWeek: selectedWeek,
       isOn: true,
     );
-    if (widget.index == 99) {
-      sharedDataList.add(sharedData);
-    } else if (0 <= widget.index && widget.index < 99) {
-      print(sharedJsonData);
-      sharedDataList[widget.index] = sharedData;
-    }
 
+    String? sharedJsonData = prefs.getString(sharedDataName);
+    if (sharedJsonData != null) {
+      sharedDataList = SharedData.decode(sharedJsonData!);
+      if (widget.index == 99) {
+        sharedDataList.add(sharedData);
+      } else if (0 <= widget.index && widget.index < 99) {
+        sharedDataList[widget.index] = sharedData;
+      }
+    } else {
+      sharedDataList.add(sharedData);
+    }
     final String encodedData = SharedData.encode(sharedDataList);
 
     await prefs.setString(sharedDataName, encodedData);
-    // Navigator.pop(context);
+      Navigator.pop(context);
   }
 
   Future<void> _showTimePicker() async {
@@ -97,6 +107,13 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     }
   }
 
+  String getTextDate() {
+    if (date == '2022-07-29') {
+      date = DateFormat('yyyy-MM-dd').format(tomorrow);
+    }
+    return date;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,9 +123,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
         elevation: 0.0,
         actions: <Widget>[
           TextButton(
-            // textColor: Colors.white,
             onPressed: () {
-              // **sharedpreference에 담기
               setTime();
             },
             child: const Text("Save"),
@@ -174,28 +189,16 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ToggleButtons(
-                    children: const [
-                      Text('Sun'),
-                      Text('Mon'),
-                      Text('Tue'),
-                      Text('Wed'),
-                      Text('Thur'),
-                      Text('Fri'),
-                      Text('Sat')
-                    ],
-                    onPressed: (int index) {
-                      setState(() {
-                        isSelected[index] = !isSelected[index];
-                      });
-                    },
-                    isSelected: isSelected,
-                  ),
+                  Text('Tomorrow ' + getTextDate(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                      )),
                   IconButton(
                     onPressed: () {
                       Future<DateTime?> selectedDate = showDatePicker(
                         context: context,
-                        initialDate: DateTime.now(),
+                        initialDate:
+                            DateFormat("yyyy-MM-dd").parse(getTextDate()),
                         firstDate: DateTime(2022),
                         lastDate: DateTime(2050),
                       );
@@ -205,9 +208,30 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                         });
                       });
                     },
-                    icon: const Icon(Icons.calendar_today_outlined),
+                    icon: const Icon(
+                      Icons.calendar_today_outlined,
+                      color: Colors.white,
+                    ),
                   ),
                 ],
+              ),
+              ToggleButtons(
+                color: Colors.white,
+                children: const [
+                  Text('Sun'),
+                  Text('Mon'),
+                  Text('Tue'),
+                  Text('Wed'),
+                  Text('Thur'),
+                  Text('Fri'),
+                  Text('Sat')
+                ],
+                onPressed: (int index) {
+                  setState(() {
+                    selectedWeek[index] = !selectedWeek[index];
+                  });
+                },
+                isSelected: selectedWeek,
               ),
               Container(
                 alignment: Alignment.centerLeft,
@@ -218,15 +242,17 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                       color: Colors.white,
                     )),
               ),
-              NumberPicker(
-                textStyle: (const TextStyle(
-                  fontSize: 15.0,
-                  color: Colors.white,
-                )),
-                value: minusMins,
-                minValue: 0,
-                maxValue: 60,
-                onChanged: (value) => setState(() => minusMins = value),
+              Expanded(
+                child: NumberPicker(
+                  textStyle: (const TextStyle(
+                    fontSize: 15.0,
+                    color: Colors.white,
+                  )),
+                  value: minusMins,
+                  minValue: 0,
+                  maxValue: 60,
+                  onChanged: (value) => setState(() => minusMins = value),
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
