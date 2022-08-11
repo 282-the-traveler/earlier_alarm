@@ -23,7 +23,6 @@ class AddAlarmScreen extends StatefulWidget {
 
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
-  String id = '9:30 PM\-10';
   int minusMins = 10;
   String date = '2022-07-29';
   final tomorrow = DateTime(
@@ -49,11 +48,9 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   Future<void> setTime() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    id = widget.time + '\-' + minusMins.toString();
 
     SharedData sharedData = SharedData(
       sharedDataName: sharedDataName,
-      id: id,
       title: widget.title,
       time: widget.time,
       minusMins: minusMins,

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 class SharedData {
   String sharedDataName = 'EARLIER_ALARM';
-  String id = '9:30\-10';
   String title = 'untitled';
   String time = '9:30';
   int minusMins = 10;
@@ -12,7 +11,6 @@ class SharedData {
 
   SharedData({
     required this.sharedDataName,
-    required this.id,
     required this.title,
     required this.time,
     required this.minusMins,
@@ -25,7 +23,6 @@ class SharedData {
 
   static Map<String, dynamic> toMap(SharedData sharedData) => {
         'sharedDataName': sharedData.sharedDataName,
-        'id': sharedData.id,
         'title': sharedData.title,
         'time': sharedData.time,
         'minusMins': sharedData.minusMins,
@@ -38,7 +35,6 @@ class SharedData {
   factory SharedData.fromJson(Map<String, dynamic> jsonData) {
     return SharedData(
       sharedDataName: jsonData['sharedDataName'],
-      id: jsonData['id'],
       title: jsonData['title'],
       time: jsonData['time'],
       minusMins: jsonData['minusMins'],
