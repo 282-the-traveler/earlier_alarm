@@ -49,6 +49,10 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   Future<void> setTime() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    widget.title = getTextTitle();
+    widget.time = getTextTime();
+    date = getTextDate();
+
     SharedData sharedData = SharedData(
       sharedDataName: sharedDataName,
       title: widget.title,

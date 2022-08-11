@@ -1,8 +1,8 @@
 import 'package:earlier_alarm/current_alarm.dart';
 import 'package:earlier_alarm/add_alarm.dart';
 import 'package:earlier_alarm/data/loading.dart';
-import 'package:earlier_alarm/google_map.dart';
-import 'package:earlier_alarm/weather_page.dart';
+import 'package:earlier_alarm/stop_watch.dart';
+import 'package:earlier_alarm/weather.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -36,14 +36,9 @@ class _MyHomePageState extends State<MyHomePage> {
   int selectedIndex = 0;
 
   final List<Widget> _pages = [
-    Loading(),
-    AddAlarmScreen(
-      title: 'earlier_alarm',
-      time: '24:00 PM',
-      isOn: false,
-      index: 99,
-    ),
-    WeatherScreen(),
+    const Loading(),
+    const WeatherScreen(),
+    const StopWatchScreen(),
   ];
 
   int _currentIndex = 0;
@@ -95,15 +90,15 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             BottomNavigationBarItem(
               icon: Icon(
-                Icons.add,
-              ),
-              label: 'Add',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
                 Icons.wb_sunny_outlined,
               ),
               label: 'Weather',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.watch_later_outlined,
+              ),
+              label: 'Stopwatch',
             ),
           ],
         ),

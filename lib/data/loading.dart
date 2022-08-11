@@ -1,4 +1,4 @@
-import 'package:earlier_alarm/weather_page.dart';
+import 'package:earlier_alarm/weather.dart';
 import 'package:flutter/material.dart';
 import 'package:earlier_alarm/data/my_position.dart';
 import 'package:earlier_alarm/data/network.dart';
