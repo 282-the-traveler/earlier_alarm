@@ -6,7 +6,7 @@ class SharedData {
   String time = '9:30';
   int minusMins = 10;
   String date = '2022-07-31';
-  // List<bool> selectedWeek = [];
+  List<bool> selectedWeek = [];
   bool isOn = false;
 
   SharedData({
@@ -29,7 +29,6 @@ class SharedData {
         'date': sharedData.date,
         // 'selectedWeek': sharedData.selectedWeek,
         'isOn': sharedData.isOn,
-        // 'week': sharedData.week,
       };
 
   factory SharedData.fromJson(Map<String, dynamic> jsonData) {
@@ -41,7 +40,6 @@ class SharedData {
       date: jsonData['date'],
       // selectedWeek: jsonData['selectedWeek'],
       isOn: jsonData['isOn'],
-      // week: jsonData['week'],
     );
   }
 

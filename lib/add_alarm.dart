@@ -23,8 +23,10 @@ class AddAlarmScreen extends StatefulWidget {
 
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
+  SharedData? sampleSharedData;
   int minusMins = 10;
   String date = '2022-07-29';
+  bool isData = false;
   final tomorrow = DateTime(
     DateTime.now().year,
     DateTime.now().month,
@@ -38,20 +40,17 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   List<SharedData> sharedDataList = [];
 
   late TextEditingController _textController =
-      TextEditingController(text: getTextTitle());
+      TextEditingController(text: sampleSharedData!.title);
 
   @override
   void initState() {
     // TODO: implement initState
+    getTime().then((value) => sampleSharedData = value);
     super.initState();
   }
 
   Future<void> setTime() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    widget.title = getTextTitle();
-    widget.time = getTextTime();
-    date = getTextDate();
 
     SharedData sharedData = SharedData(
       sharedDataName: sharedDataName,
@@ -63,9 +62,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
       isOn: true,
     );
 
-    String? sharedJsonData = prefs.getString(sharedDataName);
-    if (sharedJsonData != null) {
-      sharedDataList = SharedData.decode(sharedJsonData!);
+    if (isData) {
       if (widget.index == 99) {
         sharedDataList.add(sharedData);
       } else if (0 <= widget.index && widget.index < 99) {
@@ -77,7 +74,52 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     final String encodedData = SharedData.encode(sharedDataList);
 
     await prefs.setString(sharedDataName, encodedData);
-      Navigator.pop(context);
+    Navigator.pop(context);
+  }
+
+
+  bool isEdit() {
+    if (0 <= widget.index && widget.index < 99) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
+  Future<SharedData> getTime() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? sharedJsonData = prefs.getString(sharedDataName);
+    if (sharedJsonData != null) {
+      isData = true;
+      sharedDataList = SharedData.decode(sharedJsonData!);
+      if (isEdit()) {
+        print("sharedDataList::::::" + sharedDataList[widget.index].date);
+        return sharedDataList[widget.index];
+      } else {
+        SharedData sharedData = SharedData(
+          sharedDataName: sharedDataName,
+          title: TimeOfDay.now().format(context),
+          time: '',
+          minusMins: minusMins,
+          date: DateFormat('yyyy-MM-dd').format(tomorrow),
+          // selectedWeek: selectedWeek,
+          isOn: widget.isOn,
+        );
+        return sharedData;
+      }
+    } else {
+      SharedData sharedData = SharedData(
+        sharedDataName: sharedDataName,
+        title: widget.title,
+        time: widget.time,
+        minusMins: minusMins,
+        date: date,
+        // selectedWeek: selectedWeek,
+        isOn: widget.isOn,
+      );
+      return sharedData;
+    }
   }
 
   Future<void> _showTimePicker() async {
@@ -92,28 +134,30 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     }
   }
 
-  String getTextTime() {
-    if (widget.time == '24:00 PM') {
-      return TimeOfDay.now().format(context);
-    } else {
-      return widget.time;
-    }
-  }
+  // String getTextTime() {
+  //   if (!isData) {
+  //     return TimeOfDay.now().format(context);
+  //   } else {
+  //     return widget.time;
+  //   }
+  // }
 
-  String getTextTitle() {
-    if (widget.title == 'earlier_alarm') {
-      return '';
-    } else {
-      return widget.title;
-    }
-  }
+  // String getTextTitle() {
+  //   if (!isData) {
+  //     return '';
+  //   } else {
+  //     return widget.title;
+  //   }
+  // }
 
-  String getTextDate() {
-    if (date == '2022-07-29') {
-      date = DateFormat('yyyy-MM-dd').format(tomorrow);
-    }
-    return date;
-  }
+  // String getTextDate() {
+  //   if (!isData) {
+  //     date = DateFormat('yyyy-MM-dd').format(tomorrow);
+  //   } else {
+  //     // getTime().then((value) => date = value.date);
+  //   }
+  //   return date;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +197,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                     _showTimePicker();
                   },
                   child: Text(
-                    getTextTime(),
+                    sampleSharedData!.time,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 30.0,
@@ -190,7 +234,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text('Tomorrow ' + getTextDate(),
+                  Text('Tomorrow ' + sampleSharedData!.date,
                       style: const TextStyle(
                         color: Colors.white,
                       )),
@@ -199,7 +243,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                       Future<DateTime?> selectedDate = showDatePicker(
                         context: context,
                         initialDate:
-                            DateFormat("yyyy-MM-dd").parse(getTextDate()),
+                            DateFormat("yyyy-MM-dd").parse(sampleSharedData!.date),
                         firstDate: DateTime(2022),
                         lastDate: DateTime(2050),
                       );

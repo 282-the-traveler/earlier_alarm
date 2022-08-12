@@ -20,7 +20,6 @@ class CurrentAlarmScreen extends StatefulWidget {
 
 class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
-  String id = '9:30 PM-10';
   String title = 'untitled';
   String time = '9:30 PM';
   int minusMins = 10;
