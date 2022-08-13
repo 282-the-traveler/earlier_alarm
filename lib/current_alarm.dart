@@ -20,16 +20,25 @@ class CurrentAlarmScreen extends StatefulWidget {
 
 class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
-  String title = 'untitled';
-  String time = '9:30 PM';
-  int minusMins = 10;
-  String date = '2022-08-06';
   List<SharedData> sharedDataList = [];
 
-  Future<List<SharedData>> getTime() async {
+  final SharedData _sharedData = SharedData(
+      sharedDataName: 'EARLIER_ALARM',
+      title: '',
+      time: DateFormat('hh:mm a').format(DateTime.now()),
+      minusMins: 30,
+      date: DateFormat('yyyy-MM-dd').format(DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day + 1,
+      )),
+      isOn: true);
+
+  Future<List<SharedData>> getSharedDataList() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? sharedJsonData = prefs.getString(sharedDataName);
-    return sharedDataList = SharedData.decode(sharedJsonData!);
+    sharedDataList = SharedData.decode(sharedJsonData!);
+    return sharedDataList;
   }
 
   @override
@@ -41,11 +50,6 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String getSystemTime() {
     var now = DateTime.now();
     return DateFormat("HH:mm EEEE, MMM d yyy").format(now);
-  }
-
-  String getShortSystemTime() {
-    var now = DateTime.now();
-    return DateFormat("HH:mm").format(now);
   }
 
   @override
@@ -70,8 +74,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {
-            },
+            onPressed: () {},
             icon: const Icon(Icons.location_searching),
             iconSize: 30.0,
             color: Colors.white,
@@ -120,9 +123,8 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) {
                       return AddAlarmScreen(
-                        title: 'earlier_alarm',
-                        time: '24:00 PM',
-                        isOn: false,
+                        sharedDataList: sharedDataList,
+                        sharedData: _sharedData,
                         index: 99,
                       );
                     }));
@@ -130,11 +132,11 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                 ),
                 Expanded(
                   child: FutureBuilder<List<SharedData>>(
-                    future: getTime(),
+                    future: getSharedDataList(),
                     builder: (context, snapshot) => ListView.builder(
                       itemCount: sharedDataList.length,
                       itemBuilder: (context, index) {
-                        return AlarmTile(sharedDataList[index], index);
+                        return AlarmTile(sharedDataList, index);
                       },
                     ),
                   ),

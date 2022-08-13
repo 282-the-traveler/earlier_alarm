@@ -3,9 +3,9 @@ import 'package:earlier_alarm/data/shared_data.dart';
 import 'package:flutter/material.dart';
 
 class AlarmTile extends StatefulWidget {
-  AlarmTile(this._sharedData, this.index);
+  AlarmTile(this.sharedDataList, this.index);
 
-  final SharedData _sharedData;
+  List<SharedData> sharedDataList = [];
   int index;
 
   @override
@@ -13,39 +13,37 @@ class AlarmTile extends StatefulWidget {
 }
 
 class _AlarmTileState extends State<AlarmTile> {
-  bool isOn = true;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Text(widget._sharedData.title,
+      leading: Text(widget.sharedDataList[widget.index].title,
           style: const TextStyle(
             color: Colors.white,
           )),
-      title: Text(widget._sharedData.time,
+      title: Text(widget.sharedDataList[widget.index].time,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 45.0,
           )),
       subtitle: Text(
-          'When raining or snowing, alarms ' + widget._sharedData.minusMins.toString() + ' minutes earlier.',
+          'When raining or snowing, alarms ' + widget.sharedDataList[widget.index].minusMins.toString() + ' minutes earlier.',
           style: const TextStyle(
             color: Colors.white,
           )),
       trailing: Switch(
-        value: isOn,
+        value: widget.sharedDataList[widget.index].isOn,
         onChanged: (value) {
           setState(() {
-            isOn = value;
+            widget.sharedDataList[widget.index].isOn = value;
           });
         },
       ),
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return AddAlarmScreen(
-            title: widget._sharedData.title,
-            time: widget._sharedData.time,
-            isOn: isOn,
+            sharedDataList: widget.sharedDataList,
+            sharedData: widget.sharedDataList[widget.index],
             index: widget.index,
           );
         }));

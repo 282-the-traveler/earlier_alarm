@@ -6,15 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 class AddAlarmScreen extends StatefulWidget {
-  AddAlarmScreen(
-      {required this.title,
-      required this.time,
-      required this.isOn,
-      required this.index});
+  AddAlarmScreen({
+    required this.sharedData,
+    required this.sharedDataList,
+    required this.index,
+  });
 
-  String title;
-  String time;
-  bool isOn;
+  SharedData sharedData;
+  List<SharedData> sharedDataList = [];
   int index;
 
   @override
@@ -22,103 +21,50 @@ class AddAlarmScreen extends StatefulWidget {
 }
 
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
-  String sharedDataName = 'EARLIER_ALARM';
-  SharedData? sampleSharedData;
-  int minusMins = 10;
-  String date = '2022-07-29';
-  bool isData = false;
-  final tomorrow = DateTime(
-    DateTime.now().year,
-    DateTime.now().month,
-    DateTime.now().day + 1,
-  );
-
   List<bool> selectedWeek = List.generate(
     7,
     (index) => false,
   );
-  List<SharedData> sharedDataList = [];
+
 
   late TextEditingController _textController =
-      TextEditingController(text: sampleSharedData!.title);
+      TextEditingController(text: widget.sharedData.title);
 
   @override
   void initState() {
     // TODO: implement initState
-    getTime().then((value) => sampleSharedData = value);
     super.initState();
   }
 
-  Future<void> setTime() async {
+  Future<void> setSharedDataList() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     SharedData sharedData = SharedData(
-      sharedDataName: sharedDataName,
-      title: widget.title,
-      time: widget.time,
-      minusMins: minusMins,
-      date: date,
+      sharedDataName: widget.sharedData.sharedDataName,
+      title: widget.sharedData.title,
+      time: widget.sharedData.time,
+      minusMins: widget.sharedData.minusMins,
+      date: widget.sharedData.date,
       // selectedWeek: selectedWeek,
-      isOn: true,
+      isOn: widget.sharedData.isOn,
     );
 
-    if (isData) {
-      if (widget.index == 99) {
-        sharedDataList.add(sharedData);
-      } else if (0 <= widget.index && widget.index < 99) {
-        sharedDataList[widget.index] = sharedData;
-      }
+    if (isEdit()) {
+      widget.sharedData = sharedData;
     } else {
-      sharedDataList.add(sharedData);
+      widget.sharedDataList.add(sharedData);
     }
-    final String encodedData = SharedData.encode(sharedDataList);
+    final String encodedData = SharedData.encode(widget.sharedDataList);
 
-    await prefs.setString(sharedDataName, encodedData);
+    await prefs.setString(widget.sharedData.sharedDataName, encodedData);
     Navigator.pop(context);
   }
-
 
   bool isEdit() {
     if (0 <= widget.index && widget.index < 99) {
       return true;
     } else {
       return false;
-    }
-  }
-
-
-  Future<SharedData> getTime() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? sharedJsonData = prefs.getString(sharedDataName);
-    if (sharedJsonData != null) {
-      isData = true;
-      sharedDataList = SharedData.decode(sharedJsonData!);
-      if (isEdit()) {
-        print("sharedDataList::::::" + sharedDataList[widget.index].date);
-        return sharedDataList[widget.index];
-      } else {
-        SharedData sharedData = SharedData(
-          sharedDataName: sharedDataName,
-          title: TimeOfDay.now().format(context),
-          time: '',
-          minusMins: minusMins,
-          date: DateFormat('yyyy-MM-dd').format(tomorrow),
-          // selectedWeek: selectedWeek,
-          isOn: widget.isOn,
-        );
-        return sharedData;
-      }
-    } else {
-      SharedData sharedData = SharedData(
-        sharedDataName: sharedDataName,
-        title: widget.title,
-        time: widget.time,
-        minusMins: minusMins,
-        date: date,
-        // selectedWeek: selectedWeek,
-        isOn: widget.isOn,
-      );
-      return sharedData;
     }
   }
 
@@ -129,35 +75,10 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     );
     if (result != null) {
       setState(() {
-        widget.time = result.format(context);
+        widget.sharedData.time = result.format(context);
       });
     }
   }
-
-  // String getTextTime() {
-  //   if (!isData) {
-  //     return TimeOfDay.now().format(context);
-  //   } else {
-  //     return widget.time;
-  //   }
-  // }
-
-  // String getTextTitle() {
-  //   if (!isData) {
-  //     return '';
-  //   } else {
-  //     return widget.title;
-  //   }
-  // }
-
-  // String getTextDate() {
-  //   if (!isData) {
-  //     date = DateFormat('yyyy-MM-dd').format(tomorrow);
-  //   } else {
-  //     // getTime().then((value) => date = value.date);
-  //   }
-  //   return date;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +90,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              setTime();
+              setSharedDataList();
             },
             child: const Text("Save"),
           ),
@@ -197,7 +118,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                     _showTimePicker();
                   },
                   child: Text(
-                    sampleSharedData!.time,
+                    widget.sharedData.time,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 30.0,
@@ -227,14 +148,14 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                     )),
                 onChanged: (text) {
                   setState(() {
-                    widget.title = text;
+                    widget.sharedData.title = text;
                   });
                 },
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text('Tomorrow ' + sampleSharedData!.date,
+                  Text(widget.sharedData.date,
                       style: const TextStyle(
                         color: Colors.white,
                       )),
@@ -242,14 +163,15 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                     onPressed: () {
                       Future<DateTime?> selectedDate = showDatePicker(
                         context: context,
-                        initialDate:
-                            DateFormat("yyyy-MM-dd").parse(sampleSharedData!.date),
+                        initialDate: DateFormat("yyyy-MM-dd")
+                            .parse(widget.sharedData.date),
                         firstDate: DateTime(2022),
                         lastDate: DateTime(2050),
                       );
                       selectedDate.then((dateTime) {
                         setState(() {
-                          date = DateFormat('yyyy-MM-dd').format(dateTime!);
+                          widget.sharedData.date =
+                              DateFormat('yyyy-MM-dd').format(dateTime!);
                         });
                       });
                     },
@@ -293,10 +215,11 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                     fontSize: 15.0,
                     color: Colors.white,
                   )),
-                  value: minusMins,
+                  value: widget.sharedData.minusMins,
                   minValue: 0,
                   maxValue: 60,
-                  onChanged: (value) => setState(() => minusMins = value),
+                  onChanged: (value) =>
+                      setState(() => widget.sharedData.minusMins = value),
                 ),
               ),
               Row(
@@ -307,7 +230,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                         color: Colors.white,
                       )),
                   Text(
-                    '$minusMins',
+                    widget.sharedData.minusMins.toString(),
                     style: const TextStyle(
                       fontSize: 30.0,
                       color: Colors.white,
