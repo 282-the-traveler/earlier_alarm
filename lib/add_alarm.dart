@@ -57,7 +57,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     final String encodedData = SharedData.encode(widget.sharedDataList);
 
     await prefs.setString(widget.sharedData.sharedDataName, encodedData);
-    Navigator.pop(context);
+    Navigator.pop(context, "save");
   }
 
   bool isEdit() {

@@ -21,7 +21,10 @@ class CurrentAlarmScreen extends StatefulWidget {
 class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
   List<SharedData> sharedDataList = [];
-
+  List<bool> selectedWeek = List.generate(
+    7,
+    (index) => false,
+  );
   final SharedData _sharedData = SharedData(
       sharedDataName: 'EARLIER_ALARM',
       title: '',
@@ -32,6 +35,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
         DateTime.now().month,
         DateTime.now().day + 1,
       )),
+      // selectedWeek: selectedWeek,
       isOn: true);
 
   Future<List<SharedData>> getSharedDataList() async {
@@ -88,13 +92,14 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
               width: double.infinity,
               height: double.infinity),
           Container(
-            padding: EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
                 const SizedBox(
                   height: 100.0,
                 ),
-                TimerBuilder.periodic(Duration(minutes: 1), builder: (context) {
+                TimerBuilder.periodic(const Duration(minutes: 1),
+                    builder: (context) {
                   return Text(
                     getSystemTime(),
                     style: const TextStyle(
@@ -127,7 +132,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                         sharedData: _sharedData,
                         index: 99,
                       );
-                    }));
+                    })).then((value) => setState(() {}));
                   },
                 ),
                 Expanded(
