@@ -25,18 +25,6 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
     7,
     (index) => false,
   );
-  final SharedData _sharedData = SharedData(
-      sharedDataName: 'EARLIER_ALARM',
-      title: '',
-      time: DateFormat('hh:mm a').format(DateTime.now()),
-      minusMins: 30,
-      date: DateFormat('yyyy-MM-dd').format(DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day + 1,
-      )),
-      // selectedWeek: selectedWeek,
-      isOn: true);
 
   Future<List<SharedData>> getSharedDataList() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -125,11 +113,23 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                     color: Colors.white,
                   ),
                   onPressed: () {
+                    SharedData sharedData = SharedData(
+                        sharedDataName: 'EARLIER_ALARM',
+                        title: '',
+                        time: DateFormat('hh:mm a').format(DateTime.now()),
+                        minusMins: 30,
+                        date: DateFormat('yyyy-MM-dd').format(DateTime(
+                          DateTime.now().year,
+                          DateTime.now().month,
+                          DateTime.now().day + 1,
+                        )),
+                        selectedWeek: selectedWeek,
+                        isOn: true);
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) {
                       return AddAlarmScreen(
                         sharedDataList: sharedDataList,
-                        sharedData: _sharedData,
+                        sharedData: sharedData,
                         index: 99,
                       );
                     })).then((value) => setState(() {}));

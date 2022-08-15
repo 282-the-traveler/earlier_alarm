@@ -6,7 +6,7 @@ class SharedData {
   String time = '9:30';
   int minusMins = 10;
   String date = '2022-07-31';
-  // List<bool> selectedWeek = [];
+  List<bool> selectedWeek = [];
   bool isOn = false;
 
   SharedData({
@@ -15,11 +15,9 @@ class SharedData {
     required this.time,
     required this.minusMins,
     required this.date,
-    // required this.selectedWeek,
+    required this.selectedWeek,
     required this.isOn,
   });
-
-  // required this.week});
 
   static Map<String, dynamic> toMap(SharedData sharedData) => {
         'sharedDataName': sharedData.sharedDataName,
@@ -27,9 +25,8 @@ class SharedData {
         'time': sharedData.time,
         'minusMins': sharedData.minusMins,
         'date': sharedData.date,
-        // 'selectedWeek': sharedData.selectedWeek,
+        'selectedWeek': sharedData.selectedWeek,
         'isOn': sharedData.isOn,
-        // 'week': sharedData.week,
       };
 
   factory SharedData.fromJson(Map<String, dynamic> jsonData) {
@@ -39,9 +36,8 @@ class SharedData {
       time: jsonData['time'],
       minusMins: jsonData['minusMins'],
       date: jsonData['date'],
-      // selectedWeek: jsonData['selectedWeek'],
+      selectedWeek: jsonData['selectedWeek'],
       isOn: jsonData['isOn'],
-      // week: jsonData['week'],
     );
   }
 

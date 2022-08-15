@@ -26,7 +26,6 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     (index) => false,
   );
 
-
   late TextEditingController _textController =
       TextEditingController(text: widget.sharedData.title);
 
@@ -45,7 +44,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
       time: widget.sharedData.time,
       minusMins: widget.sharedData.minusMins,
       date: widget.sharedData.date,
-      // selectedWeek: selectedWeek,
+      selectedWeek: selectedWeek,
       isOn: widget.sharedData.isOn,
     );
 
@@ -57,6 +56,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     final String encodedData = SharedData.encode(widget.sharedDataList);
 
     await prefs.setString(widget.sharedData.sharedDataName, encodedData);
+
     Navigator.pop(context, "save");
   }
 
