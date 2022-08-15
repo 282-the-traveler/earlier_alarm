@@ -25,6 +25,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     7,
     (index) => false,
   );
+  bool _visibility = true;
 
   late TextEditingController _textController =
       TextEditingController(text: widget.sharedData.title);
@@ -155,30 +156,36 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(widget.sharedData.date,
-                      style: const TextStyle(
-                        color: Colors.white,
-                      )),
-                  IconButton(
-                    onPressed: () {
-                      Future<DateTime?> selectedDate = showDatePicker(
-                        context: context,
-                        initialDate: DateFormat("yyyy-MM-dd")
-                            .parse(widget.sharedData.date),
-                        firstDate: DateTime(2022),
-                        lastDate: DateTime(2050),
-                      );
-                      selectedDate.then((dateTime) {
-                        setState(() {
-                          widget.sharedData.date =
-                              DateFormat('yyyy-MM-dd').format(dateTime!);
+                  Visibility(
+                    child: Text(widget.sharedData.date,
+                        style: const TextStyle(
+                          color: Colors.white,
+                        )),
+                    visible: _visibility,
+                  ),
+                  Visibility(
+                    child: IconButton(
+                      onPressed: () {
+                        Future<DateTime?> selectedDate = showDatePicker(
+                          context: context,
+                          initialDate: DateFormat("yyyy-MM-dd")
+                              .parse(widget.sharedData.date),
+                          firstDate: DateTime(2022),
+                          lastDate: DateTime(2050),
+                        );
+                        selectedDate.then((dateTime) {
+                          setState(() {
+                            widget.sharedData.date =
+                                DateFormat('yyyy-MM-dd').format(dateTime!);
+                          });
                         });
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.calendar_today_outlined,
-                      color: Colors.white,
+                      },
+                      icon: const Icon(
+                        Icons.calendar_today_outlined,
+                        color: Colors.white,
+                      ),
                     ),
+                    visible: _visibility,
                   ),
                 ],
               ),
@@ -196,6 +203,11 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                 onPressed: (int index) {
                   setState(() {
                     selectedWeek[index] = !selectedWeek[index];
+                    if (selectedWeek.contains(true)) {
+                      _visibility = false;
+                    } else {
+                      _visibility = true;
+                    }
                   });
                 },
                 isSelected: selectedWeek,
