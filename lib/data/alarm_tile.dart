@@ -13,6 +13,7 @@ class AlarmTile extends StatefulWidget {
 }
 
 class _AlarmTileState extends State<AlarmTile> {
+  var _tapPosition;
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +25,12 @@ class _AlarmTileState extends State<AlarmTile> {
       title: Text(widget.sharedDataList[widget.index].time,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 45.0,
+            fontSize: 30.0,
           )),
       subtitle: Text(
-          'When raining or snowing, alarms ' + widget.sharedDataList[widget.index].minusMins.toString() + ' minutes earlier.',
+          'When raining or snowing, alarms ' +
+              widget.sharedDataList[widget.index].minusMins.toString() +
+              ' minutes earlier.',
           style: const TextStyle(
             color: Colors.white,
           )),
@@ -46,9 +49,26 @@ class _AlarmTileState extends State<AlarmTile> {
             sharedData: widget.sharedDataList[widget.index],
             index: widget.index,
           );
-        }));
+        })).then((value) => setState(() {}));
       },
-      onLongPress: () {},
+      onLongPress: () {
+        // final RenderObject? overlay = Overlay.of(context)!.context.findRenderObject();
+        // showMenu(
+        //     context: context,
+        //     position: RelativeRect.fromRect(
+        //         _tapPosition & const Size(40, 40),
+        //         Offset.zero & overlay!.semanticBounds.size),
+        //     items: <PopupMenuEntry>[
+        //       PopupMenuItem(
+        //           value: widget.index,
+        //           child: Row(
+        //             children: const [
+        //               Icon(Icons.delete_forever_sharp),
+        //               Text("Delete"),
+        //             ],
+        //           ))
+        //     ]).then((value) => widget.sharedDataList.remove(value));
+      },
     );
   }
 }

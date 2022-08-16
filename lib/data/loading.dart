@@ -18,8 +18,8 @@ class _LoadingState extends State<Loading> {
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
     getPosition();
+    super.initState();
   }
 
   dynamic weatherImage = 'svgs/day.svg';

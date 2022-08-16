@@ -21,7 +21,7 @@ class AddAlarmScreen extends StatefulWidget {
 }
 
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
-  List<bool> selectedWeek = List.generate(
+  List<bool> _selectedWeek = List.generate(
     7,
     (index) => false,
   );
@@ -32,8 +32,13 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
   }
 
   Future<void> setSharedDataList() async {
@@ -45,7 +50,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
       time: widget.sharedData.time,
       minusMins: widget.sharedData.minusMins,
       date: widget.sharedData.date,
-      selectedWeek: selectedWeek,
+      selectedWeek: _selectedWeek,
       isOn: widget.sharedData.isOn,
     );
 
@@ -202,15 +207,15 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                 ],
                 onPressed: (int index) {
                   setState(() {
-                    selectedWeek[index] = !selectedWeek[index];
-                    if (selectedWeek.contains(true)) {
+                    _selectedWeek[index] = !_selectedWeek[index];
+                    if (_selectedWeek.contains(true)) {
                       _visibility = false;
                     } else {
                       _visibility = true;
                     }
                   });
                 },
-                isSelected: selectedWeek,
+                isSelected: _selectedWeek,
               ),
               Container(
                 alignment: Alignment.centerLeft,
@@ -234,13 +239,14 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                       setState(() => widget.sharedData.minusMins = value),
                 ),
               ),
+              const Text('When raining or snowing, alarms ',
+                  style: TextStyle(
+                    color: Colors.white,
+                  )),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text('When raining or snowing, alarms ',
-                      style: TextStyle(
-                        color: Colors.white,
-                      )),
                   Text(
                     widget.sharedData.minusMins.toString(),
                     style: const TextStyle(

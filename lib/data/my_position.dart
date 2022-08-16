@@ -25,7 +25,6 @@ class MyPosition {
           permission == LocationPermission.whileInUse) {
         Position position = await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.high);
-        print(position);
 
         positionLatitude = position.latitude;
         positionLongitude = position.longitude;
