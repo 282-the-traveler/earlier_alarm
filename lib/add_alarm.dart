@@ -21,10 +21,6 @@ class AddAlarmScreen extends StatefulWidget {
 }
 
 class _AddAlarmScreenState extends State<AddAlarmScreen> {
-  List<bool> _selectedWeek = List.generate(
-    7,
-    (index) => false,
-  );
   bool _visibility = true;
 
   late TextEditingController _textController =
@@ -32,6 +28,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   @override
   void initState() {
+    _getVisibility();
     super.initState();
   }
 
@@ -50,7 +47,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
       time: widget.sharedData.time,
       minusMins: widget.sharedData.minusMins,
       date: widget.sharedData.date,
-      selectedWeek: _selectedWeek,
+      selectedWeek: widget.sharedData.selectedWeek,
       isOn: widget.sharedData.isOn,
     );
 
@@ -83,6 +80,14 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
       setState(() {
         widget.sharedData.time = result.format(context);
       });
+    }
+  }
+
+  void _getVisibility() {
+    if (widget.sharedData.selectedWeek.contains(true)) {
+      _visibility = false;
+    } else {
+      _visibility = true;
     }
   }
 
@@ -209,15 +214,12 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                   ],
                   onPressed: (int index) {
                     setState(() {
-                      _selectedWeek[index] = !_selectedWeek[index];
-                      if (_selectedWeek.contains(true)) {
-                        _visibility = false;
-                      } else {
-                        _visibility = true;
-                      }
+                      widget.sharedData.selectedWeek[index] =
+                          !widget.sharedData.selectedWeek[index];
+                      _getVisibility();
                     });
                   },
-                  isSelected: _selectedWeek,
+                  isSelected: widget.sharedData.selectedWeek,
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
