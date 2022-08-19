@@ -1,4 +1,5 @@
-import 'package:earlier_alarm/data/shared_data.dart';
+import 'package:earlier_alarm/data/datetime_format.dart';
+import 'package:earlier_alarm/data/shared_alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -45,11 +46,18 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
       sharedDataName: widget.sharedData.sharedDataName,
       title: widget.sharedData.title,
       time: widget.sharedData.time,
-      minusMins: widget.sharedData.minusMins,
+      difference: widget.sharedData.difference,
+      calculatedTime: widget.sharedData.calculatedTime,
       date: widget.sharedData.date,
       selectedWeek: widget.sharedData.selectedWeek,
       isOn: widget.sharedData.isOn,
     );
+
+    String calculatedTime = DateTimeFormat.getCalculatedTime(
+      widget.sharedData.time,
+      widget.sharedData.difference,
+    );
+    sharedData.calculatedTime = calculatedTime;
 
     if (isEdit()) {
       widget.sharedData = sharedData;
@@ -235,11 +243,11 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                     fontSize: 15.0,
                     color: Colors.white,
                   )),
-                  value: widget.sharedData.minusMins,
+                  value: widget.sharedData.difference,
                   minValue: 0,
                   maxValue: 60,
                   onChanged: (value) =>
-                      setState(() => widget.sharedData.minusMins = value),
+                      setState(() => widget.sharedData.difference = value),
                 ),
                 const Text('When raining or snowing, alarms ',
                     style: TextStyle(
@@ -250,7 +258,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      widget.sharedData.minusMins.toString(),
+                      widget.sharedData.difference.toString(),
                       style: const TextStyle(
                         fontSize: 30.0,
                         color: Colors.white,

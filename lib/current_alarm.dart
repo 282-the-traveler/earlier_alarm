@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'package:earlier_alarm/alert_alarm.dart';
+import 'package:earlier_alarm/data/datetime_format.dart';
+import 'package:earlier_alarm/data/my_position.dart';
+import 'package:earlier_alarm/data/weather_conditions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_builder/timer_builder.dart';
-import 'package:intl/intl.dart';
-import 'package:earlier_alarm/data/shared_data.dart';
+import 'package:earlier_alarm/data/shared_alarm.dart';
 import 'package:earlier_alarm/add_alarm.dart';
 import 'package:earlier_alarm/data/alarm_tile.dart';
 
@@ -26,6 +29,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
     7,
     (index) => false,
   );
+  int difference = 30;
 
   Future<List<SharedAlarm>> getSharedDataList() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -37,30 +41,45 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   Timer runAlarm() {
     return Timer.periodic(Duration(minutes: 1), (timer) async {
       List<String> _alarmList = [];
+      List<String> _calculatedAlarmList = [];
       sharedDataList.forEach((alarm) {
         if (alarm.isOn) {
           _alarmList.add(alarm.time);
+          _calculatedAlarmList.add(alarm.calculatedTime);
         }
       });
-      String _currentTime =
-          DateFormat("h:mm a").format(DateTime.now()).toString();
-      if (_alarmList.contains(_currentTime)) {
-        FlutterRingtonePlayer.playAlarm(
-            volume: 5, looping: true, asAlarm: true);
-        Navigator.of(context).pushNamed('/addAlarm');
+      String _currentTime = DateTimeFormat.getSystemTime();
+      if (_calculatedAlarmList.contains(_currentTime)) {
+        print("_calculatedAlarmList" + _currentTime.toString());
+        MyPosition myPosition = MyPosition();
+        Map map = await myPosition.getPosition();
+        int condition = map['condition'];
+        WeatherConditions weatherConditions = WeatherConditions();
+        if (weatherConditions.isRainOrSnow(condition)) {
+          playAlarm(context);
+        }
+      } else {
+        if (_alarmList.contains(_currentTime)) {
+          print("_alarmList" + _currentTime.toString());
+          playAlarm(context);
+        }
       }
     });
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+  void playAlarm(BuildContext context) {
+    FlutterRingtonePlayer.playAlarm(volume: 5, looping: true, asAlarm: true);
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return const AlertAlarm();
+    }));
   }
 
-  String getSystemTime() {
-    var now = DateTime.now();
-    return DateFormat("HH:mm EEEE, MMM d yyy").format(now);
+  @override
+  void initState() {
+    setState(() {
+      runAlarm();
+    });
+    super.initState();
   }
 
   @override
@@ -106,7 +125,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                 TimerBuilder.periodic(const Duration(minutes: 1),
                     builder: (context) {
                   return Text(
-                    getSystemTime(),
+                    DateTimeFormat.getSystemDateTime(),
                     style: const TextStyle(
                       color: Colors.white,
                     ),
@@ -133,13 +152,11 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                     SharedAlarm sharedData = SharedAlarm(
                         sharedDataName: 'EARLIER_ALARM',
                         title: '',
-                        time: DateFormat('hh:mm a').format(DateTime.now()),
-                        minusMins: 30,
-                        date: DateFormat('yyyy-MM-dd').format(DateTime(
-                          DateTime.now().year,
-                          DateTime.now().month,
-                          DateTime.now().day + 1,
-                        )),
+                        time: DateTimeFormat.getSystemTime(),
+                        difference: difference,
+                        calculatedTime: DateTimeFormat.getCalculatedTime(
+                            DateTimeFormat.getSystemTime(), difference),
+                        date: DateTimeFormat.getTomorrow(),
                         selectedWeek: selectedWeek,
                         isOn: true);
                     Navigator.of(context)
@@ -149,9 +166,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                         sharedData: sharedData,
                         index: 99,
                       );
-                    })).then((value) => setState(() {
-                              runAlarm();
-                            }));
+                    })).then((value) => setState(() {}));
                   },
                 ),
                 Expanded(

@@ -1,6 +1,7 @@
 import 'package:earlier_alarm/add_alarm.dart';
-import 'package:earlier_alarm/data/shared_data.dart';
+import 'package:earlier_alarm/data/shared_alarm.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AlarmTile extends StatefulWidget {
   AlarmTile(this.sharedDataList, this.index);
@@ -29,17 +30,22 @@ class _AlarmTileState extends State<AlarmTile> {
           )),
       subtitle: Text(
           'When raining or snowing, alarms ' +
-              widget.sharedDataList[widget.index].minusMins.toString() +
+              widget.sharedDataList[widget.index].difference.toString() +
               ' minutes earlier.',
           style: const TextStyle(
             color: Colors.white,
           )),
       trailing: Switch(
         value: widget.sharedDataList[widget.index].isOn,
-        onChanged: (value) {
+        onChanged: (value) async {
           setState(() {
             widget.sharedDataList[widget.index].isOn = value;
           });
+
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          final String encodedData = SharedAlarm.encode(widget.sharedDataList);
+          await prefs.setString(
+              widget.sharedDataList[widget.index].sharedDataName, encodedData);
         },
       ),
       onTap: () {
@@ -52,11 +58,11 @@ class _AlarmTileState extends State<AlarmTile> {
         })).then((value) => setState(() {}));
       },
       onLongPress: () {
-        final RenderObject? overlay = Overlay.of(context)!.context.findRenderObject();
+        final RenderObject? overlay =
+            Overlay.of(context)!.context.findRenderObject();
         showMenu(
             context: context,
-            position: RelativeRect.fromRect(
-                _tapPosition & const Size(40, 40),
+            position: RelativeRect.fromRect(_tapPosition & const Size(40, 40),
                 Offset.zero & overlay!.semanticBounds.size),
             items: <PopupMenuEntry>[
               PopupMenuItem(

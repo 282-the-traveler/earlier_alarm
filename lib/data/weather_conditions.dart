@@ -2,7 +2,7 @@ class WeatherConditions {
   dynamic weatherImage = 'svgs/day.svg';
 
   dynamic getWeatherImage(int condition, int sunrise, int sunset) {
-    var unixTimestamp = DateTime.now().millisecondsSinceEpoch/ 1000;
+    var unixTimestamp = DateTime.now().millisecondsSinceEpoch / 1000;
     if (condition < 300) {
       return 'svgs/thunder.svg';
     } else if (condition < 600) {
@@ -19,6 +19,14 @@ class WeatherConditions {
       }
     } else {
       return 'svgs/cloudy.svg';
+    }
+  }
+
+  bool isRainOrSnow(int condition) {
+    if (500 < condition && condition < 700) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

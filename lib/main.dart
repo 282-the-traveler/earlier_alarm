@@ -1,6 +1,4 @@
-import 'package:earlier_alarm/current_alarm.dart';
-import 'package:earlier_alarm/add_alarm.dart';
-import 'package:earlier_alarm/data/loading.dart';
+import 'package:earlier_alarm/loading.dart';
 import 'package:earlier_alarm/stop_watch.dart';
 import 'package:earlier_alarm/weather.dart';
 import 'package:flutter/material.dart';
