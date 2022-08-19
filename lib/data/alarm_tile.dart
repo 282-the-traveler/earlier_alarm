@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class AlarmTile extends StatefulWidget {
   AlarmTile(this.sharedDataList, this.index);
 
-  List<SharedData> sharedDataList = [];
+  List<SharedAlarm> sharedDataList = [];
   int index;
 
   @override
@@ -52,22 +52,22 @@ class _AlarmTileState extends State<AlarmTile> {
         })).then((value) => setState(() {}));
       },
       onLongPress: () {
-        // final RenderObject? overlay = Overlay.of(context)!.context.findRenderObject();
-        // showMenu(
-        //     context: context,
-        //     position: RelativeRect.fromRect(
-        //         _tapPosition & const Size(40, 40),
-        //         Offset.zero & overlay!.semanticBounds.size),
-        //     items: <PopupMenuEntry>[
-        //       PopupMenuItem(
-        //           value: widget.index,
-        //           child: Row(
-        //             children: const [
-        //               Icon(Icons.delete_forever_sharp),
-        //               Text("Delete"),
-        //             ],
-        //           ))
-        //     ]).then((value) => widget.sharedDataList.remove(value));
+        final RenderObject? overlay = Overlay.of(context)!.context.findRenderObject();
+        showMenu(
+            context: context,
+            position: RelativeRect.fromRect(
+                _tapPosition & const Size(40, 40),
+                Offset.zero & overlay!.semanticBounds.size),
+            items: <PopupMenuEntry>[
+              PopupMenuItem(
+                  value: widget.index,
+                  child: Row(
+                    children: const [
+                      Icon(Icons.delete_forever_sharp),
+                      Text("Delete"),
+                    ],
+                  ))
+            ]).then((value) => widget.sharedDataList.remove(value));
       },
     );
   }

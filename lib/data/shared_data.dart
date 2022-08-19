@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class SharedData {
+class SharedAlarm {
   String sharedDataName = 'EARLIER_ALARM';
   String title = 'untitled';
   String time = '9:30';
@@ -9,7 +9,7 @@ class SharedData {
   List<bool> selectedWeek = [];
   bool isOn = false;
 
-  SharedData({
+  SharedAlarm({
     required this.sharedDataName,
     required this.title,
     required this.time,
@@ -19,7 +19,7 @@ class SharedData {
     required this.isOn,
   });
 
-  static Map<String, dynamic> toMap(SharedData sharedData) => {
+  static Map<String, dynamic> toMap(SharedAlarm sharedData) => {
         'sharedDataName': sharedData.sharedDataName,
         'title': sharedData.title,
         'time': sharedData.time,
@@ -29,8 +29,8 @@ class SharedData {
         'isOn': sharedData.isOn,
       };
 
-  factory SharedData.fromJson(Map<String, dynamic> jsonData) {
-    return SharedData(
+  factory SharedAlarm.fromJson(Map<String, dynamic> jsonData) {
+    return SharedAlarm(
       sharedDataName: jsonData['sharedDataName'],
       title: jsonData['title'],
       time: jsonData['time'],
@@ -41,15 +41,15 @@ class SharedData {
     );
   }
 
-  static String encode(List<SharedData> sharedData) => json.encode(
+  static String encode(List<SharedAlarm> sharedData) => json.encode(
         sharedData
             .map<Map<String, dynamic>>(
-                (sharedData) => SharedData.toMap(sharedData))
+                (sharedData) => SharedAlarm.toMap(sharedData))
             .toList(),
       );
 
-  static List<SharedData> decode(String sharedData) =>
+  static List<SharedAlarm> decode(String sharedData) =>
       (json.decode(sharedData) as List<dynamic>)
-          .map<SharedData>((item) => SharedData.fromJson(item))
+          .map<SharedAlarm>((item) => SharedAlarm.fromJson(item))
           .toList();
 }

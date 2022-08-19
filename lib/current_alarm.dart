@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_builder/timer_builder.dart';
@@ -20,17 +21,35 @@ class CurrentAlarmScreen extends StatefulWidget {
 
 class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
-  List<SharedData> sharedDataList = [];
+  List<SharedAlarm> sharedDataList = [];
   List<bool> selectedWeek = List.generate(
     7,
     (index) => false,
   );
 
-  Future<List<SharedData>> getSharedDataList() async {
+  Future<List<SharedAlarm>> getSharedDataList() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? sharedJsonData = prefs.getString(sharedDataName);
-    sharedDataList = SharedData.decode(sharedJsonData!);
+    sharedDataList = SharedAlarm.decode(sharedJsonData!);
     return sharedDataList;
+  }
+
+  Timer runAlarm() {
+    return Timer.periodic(Duration(minutes: 1), (timer) async {
+      List<String> _alarmList = [];
+      sharedDataList.forEach((alarm) {
+        if (alarm.isOn) {
+          _alarmList.add(alarm.time);
+        }
+      });
+      String _currentTime =
+          DateFormat("h:mm a").format(DateTime.now()).toString();
+      if (_alarmList.contains(_currentTime)) {
+        FlutterRingtonePlayer.playAlarm(
+            volume: 5, looping: true, asAlarm: true);
+        Navigator.of(context).pushNamed('/addAlarm');
+      }
+    });
   }
 
   @override
@@ -48,8 +67,6 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   void dispose() {
     // TODO: implement dispose
   }
-
-  void fetchData() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +130,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    SharedData sharedData = SharedData(
+                    SharedAlarm sharedData = SharedAlarm(
                         sharedDataName: 'EARLIER_ALARM',
                         title: '',
                         time: DateFormat('hh:mm a').format(DateTime.now()),
@@ -132,11 +149,13 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                         sharedData: sharedData,
                         index: 99,
                       );
-                    })).then((value) => setState(() {}));
+                    })).then((value) => setState(() {
+                              runAlarm();
+                            }));
                   },
                 ),
                 Expanded(
-                  child: FutureBuilder<List<SharedData>>(
+                  child: FutureBuilder<List<SharedAlarm>>(
                     future: getSharedDataList(),
                     builder: (context, snapshot) => ListView.builder(
                       itemCount: sharedDataList.length,

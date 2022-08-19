@@ -12,8 +12,8 @@ class AddAlarmScreen extends StatefulWidget {
     required this.index,
   });
 
-  SharedData sharedData;
-  List<SharedData> sharedDataList = [];
+  SharedAlarm sharedData;
+  List<SharedAlarm> sharedDataList = [];
   int index;
 
   @override
@@ -41,7 +41,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   Future<void> setSharedDataList() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    SharedData sharedData = SharedData(
+    SharedAlarm sharedData = SharedAlarm(
       sharedDataName: widget.sharedData.sharedDataName,
       title: widget.sharedData.title,
       time: widget.sharedData.time,
@@ -56,7 +56,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     } else {
       widget.sharedDataList.add(sharedData);
     }
-    final String encodedData = SharedData.encode(widget.sharedDataList);
+    final String encodedData = SharedAlarm.encode(widget.sharedDataList);
 
     await prefs.setString(widget.sharedData.sharedDataName, encodedData);
 
