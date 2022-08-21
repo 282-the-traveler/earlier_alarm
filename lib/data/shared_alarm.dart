@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 class SharedAlarm {
-  String sharedDataName = 'EARLIER_ALARM';
-  String title = 'untitled';
-  String time = '9:30';
-  int difference = 10;
+  String sharedDataName;
+  String title;
+  String time;
+  int difference;
   String calculatedTime;
-  String date = '2022-07-31';
-  List<bool> selectedWeek = [];
-  bool isOn = false;
+  String date;
+  List<bool> selectedWeek;
+  bool isOn;
 
   SharedAlarm({
     required this.sharedDataName,

@@ -40,9 +40,9 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   }
 
   Future<void> setSharedDataList() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final SharedPreferences _prefs = await SharedPreferences.getInstance();
 
-    SharedAlarm sharedData = SharedAlarm(
+    SharedAlarm _sharedData = SharedAlarm(
       sharedDataName: widget.sharedData.sharedDataName,
       title: widget.sharedData.title,
       time: widget.sharedData.time,
@@ -57,16 +57,16 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
       widget.sharedData.time,
       widget.sharedData.difference,
     );
-    sharedData.calculatedTime = calculatedTime;
+    _sharedData.calculatedTime = calculatedTime;
 
     if (isEdit()) {
-      widget.sharedData = sharedData;
+      widget.sharedData = _sharedData;
     } else {
-      widget.sharedDataList.add(sharedData);
+      widget.sharedDataList.add(_sharedData);
     }
     final String encodedData = SharedAlarm.encode(widget.sharedDataList);
 
-    await prefs.setString(widget.sharedData.sharedDataName, encodedData);
+    await _prefs.setString(widget.sharedData.sharedDataName, encodedData);
 
     Navigator.pop(context, "save");
   }
