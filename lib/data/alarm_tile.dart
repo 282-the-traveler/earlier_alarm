@@ -14,8 +14,6 @@ class AlarmTile extends StatefulWidget {
 }
 
 class _AlarmTileState extends State<AlarmTile> {
-  var _tapPosition;
-
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -58,6 +56,7 @@ class _AlarmTileState extends State<AlarmTile> {
         })).then((value) => setState(() {}));
       },
       onLongPress: () {
+        Offset _tapPosition = Offset.zero;
         final RenderObject? overlay =
             Overlay.of(context)!.context.findRenderObject();
         showMenu(
@@ -69,11 +68,11 @@ class _AlarmTileState extends State<AlarmTile> {
                   value: widget.index,
                   child: Row(
                     children: const [
-                      Icon(Icons.delete_forever_sharp),
                       Text("Delete"),
+                      Icon(Icons.close),
                     ],
                   ))
-            ]).then((value) => widget.sharedDataList.remove(value));
+            ]).then((value) => widget.sharedDataList.remove(widget.index));
       },
     );
   }
