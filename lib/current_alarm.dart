@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_builder/timer_builder.dart';
 import 'package:earlier_alarm/data/shared_alarm.dart';
 import 'package:earlier_alarm/add_alarm.dart';
-import 'package:earlier_alarm/data/alarm_tile.dart';
+import 'package:earlier_alarm/alarm_tile.dart';
 
 class CurrentAlarmScreen extends StatefulWidget {
   CurrentAlarmScreen({this.temperature, this.weatherImage});
@@ -32,8 +32,8 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   int difference = 30;
 
   Future<List<SharedAlarm>> getSharedDataList() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? sharedJsonData = prefs.getString(sharedDataName);
+    final SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final String? sharedJsonData = _prefs.getString(sharedDataName);
     sharedDataList = SharedAlarm.decode(sharedJsonData!);
     return sharedDataList;
   }
@@ -42,15 +42,22 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
     return Timer.periodic(Duration(minutes: 1), (timer) async {
       List<String> _alarmList = [];
       List<String> _calculatedAlarmList = [];
-      sharedDataList.forEach((alarm) {
+      for (var alarm in sharedDataList) {
         if (alarm.isOn) {
-          _alarmList.add(alarm.time);
-          _calculatedAlarmList.add(alarm.calculatedTime);
+          if (alarm.date.contains(DateTimeFormat.getToday()) &&
+              !DateTimeFormat.isContain(alarm.selectedWeek)) {
+            _alarmList.add(alarm.time);
+            _calculatedAlarmList.add(alarm.calculatedTime);
+          } else {
+            if (DateTimeFormat.getWeekday(selectedWeek)) {
+              _alarmList.add(alarm.time);
+              _calculatedAlarmList.add(alarm.calculatedTime);
+            }
+          }
         }
-      });
+      }
       String _currentTime = DateTimeFormat.getSystemTime();
       if (_calculatedAlarmList.contains(_currentTime)) {
-        print("_calculatedAlarmList" + _currentTime.toString());
         MyPosition myPosition = MyPosition();
         Map map = await myPosition.getPosition();
         int condition = map['condition'];
@@ -60,7 +67,6 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
         }
       } else {
         if (_alarmList.contains(_currentTime)) {
-          print("_alarmList" + _currentTime.toString());
           playAlarm(context);
         }
       }
@@ -76,10 +82,11 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
 
   @override
   void initState() {
+    super.initState();
     setState(() {
       runAlarm();
+      getSharedDataList();
     });
-    super.initState();
   }
 
   @override
@@ -105,85 +112,70 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
             onPressed: () {},
             icon: const Icon(Icons.location_searching),
             iconSize: 30.0,
-            color: Colors.white,
           )
         ],
       ),
-      body: Stack(
-        children: <Widget>[
-          Image.asset('images/cloudy.png',
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity),
-          Container(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 100.0,
-                ),
-                TimerBuilder.periodic(const Duration(minutes: 1),
-                    builder: (context) {
-                  return Text(
-                    DateTimeFormat.getSystemDateTime(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
+      body: Container(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 100.0,
+            ),
+            TimerBuilder.periodic(const Duration(minutes: 1),
+                builder: (context) {
+              return Text(
+                DateTimeFormat.getSystemDateTime(),
+              );
+            }),
+            SvgPicture.asset(widget.weatherImage),
+            Text(widget.temperature.toString() + "\u00B0",
+                style: const TextStyle(
+                  fontSize: 45.0,
+                )),
+            const Divider(
+              height: 15.0,
+              thickness: 2.0,
+            ),
+            IconButton(
+              alignment: Alignment.centerLeft,
+              icon: const Icon(
+                Icons.add,
+              ),
+              onPressed: () {
+                SharedAlarm sharedData = SharedAlarm(
+                    sharedDataName: 'EARLIER_ALARM',
+                    title: '',
+                    time: DateTimeFormat.getSystemTime(),
+                    difference: difference,
+                    calculatedTime: DateTimeFormat.getCalculatedTime(
+                        DateTimeFormat.getSystemTime(), difference),
+                    date: DateTimeFormat.getTomorrow(),
+                    selectedWeek: selectedWeek,
+                    isOn: true);
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return AddAlarmScreen(
+                    sharedDataList: sharedDataList,
+                    sharedData: sharedData,
+                    index: 99,
                   );
-                }),
-                SvgPicture.asset(widget.weatherImage),
-                Text(widget.temperature.toString() + "\u00B0",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 45.0,
-                    )),
-                const Divider(
-                  height: 15.0,
-                  thickness: 2.0,
-                  color: Colors.white30,
-                ),
-                IconButton(
-                  alignment: Alignment.centerLeft,
-                  icon: const Icon(
-                    Icons.add,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    SharedAlarm sharedData = SharedAlarm(
-                        sharedDataName: 'EARLIER_ALARM',
-                        title: '',
-                        time: DateTimeFormat.getSystemTime(),
-                        difference: difference,
-                        calculatedTime: DateTimeFormat.getCalculatedTime(
-                            DateTimeFormat.getSystemTime(), difference),
-                        date: DateTimeFormat.getTomorrow(),
-                        selectedWeek: selectedWeek,
-                        isOn: true);
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) {
-                      return AddAlarmScreen(
-                        sharedDataList: sharedDataList,
-                        sharedData: sharedData,
-                        index: 99,
-                      );
-                    })).then((value) => setState(() {}));
+                })).then((value) => setState(() {}));
+              },
+            ),
+            Expanded(
+              child: FutureBuilder<List<SharedAlarm>>(
+                future: getSharedDataList(),
+                builder: (context, snapshot) => ListView.builder(
+                  itemCount: sharedDataList.length,
+                  itemBuilder: (context, index) {
+                    return AlarmTile(sharedDataList, index);
                   },
                 ),
-                Expanded(
-                  child: FutureBuilder<List<SharedAlarm>>(
-                    future: getSharedDataList(),
-                    builder: (context, snapshot) => ListView.builder(
-                      itemCount: sharedDataList.length,
-                      itemBuilder: (context, index) {
-                        return AlarmTile(sharedDataList, index);
-                      },
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

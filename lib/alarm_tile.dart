@@ -14,16 +14,26 @@ class AlarmTile extends StatefulWidget {
 }
 
 class _AlarmTileState extends State<AlarmTile> {
+  resetList(dynamic value) {
+    widget.sharedDataList.remove(value);
+    saveList(widget.sharedDataList);
+  }
+  saveList(List<SharedAlarm> sharedDataList) async{
+    final SharedPreferences _prefs = await SharedPreferences.getInstance();
+    _prefs.clear();
+    final String encodedData = SharedAlarm.encode(sharedDataList);
+    await _prefs.setString(
+        sharedDataList[widget.index].sharedDataName, encodedData);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Text(widget.sharedDataList[widget.index].title,
           style: const TextStyle(
-            color: Colors.white,
           )),
       title: Text(widget.sharedDataList[widget.index].time,
           style: const TextStyle(
-            color: Colors.white,
             fontSize: 30.0,
           )),
       subtitle: Text(
@@ -31,21 +41,15 @@ class _AlarmTileState extends State<AlarmTile> {
               widget.sharedDataList[widget.index].difference.toString() +
               ' minutes earlier.',
           style: const TextStyle(
-            color: Colors.white,
           )),
       trailing: Switch(
         value: widget.sharedDataList[widget.index].isOn,
-        onChanged: (value) async {
+        onChanged: (value) {
           setState(() {
             widget.sharedDataList[widget.index].isOn = value;
           });
-
-          final SharedPreferences prefs = await SharedPreferences.getInstance();
-          final String encodedData = SharedAlarm.encode(widget.sharedDataList);
-          await prefs.setString(
-              widget.sharedDataList[widget.index].sharedDataName, encodedData);
-        },
-      ),
+          saveList(widget.sharedDataList);
+        }),
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return AddAlarmScreen(
@@ -72,7 +76,9 @@ class _AlarmTileState extends State<AlarmTile> {
                       Icon(Icons.close),
                     ],
                   ))
-            ]).then((value) => widget.sharedDataList.remove(widget.index));
+            ]).then((value) => setState(()  {
+            resetList(value);
+        }));
       },
     );
   }

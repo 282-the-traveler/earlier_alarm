@@ -39,7 +39,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     super.dispose();
   }
 
-  Future<void> setSharedDataList() async {
+  Future<void> _saveList() async {
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
 
     SharedAlarm _sharedData = SharedAlarm(
@@ -59,19 +59,18 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     );
     _sharedData.calculatedTime = calculatedTime;
 
-    if (isEdit()) {
+    if (_isEdit()) {
       widget.sharedData = _sharedData;
     } else {
       widget.sharedDataList.add(_sharedData);
     }
     final String encodedData = SharedAlarm.encode(widget.sharedDataList);
-
+    _prefs.clear();
     await _prefs.setString(widget.sharedData.sharedDataName, encodedData);
-
     Navigator.pop(context, "save");
   }
 
-  bool isEdit() {
+  bool _isEdit() {
     if (0 <= widget.index && widget.index < 99) {
       return true;
     } else {
@@ -110,170 +109,141 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              setSharedDataList();
+              _saveList();
             },
             child: const Text("Save"),
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          Image.asset('images/cloudy.png',
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity),
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(children: [
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: const Text('Time for alarm',
-                      style: TextStyle(
-                        fontSize: 15.0,
-                        color: Colors.white,
-                      )),
-                ),
-                TextButton(
-                    onPressed: () {
-                      _showTimePicker();
-                    },
-                    child: Text(
-                      widget.sharedData.time,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 30.0,
-                      ),
-                    )),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  height: 50.0,
-                  child: const Text('Title',
-                      style: TextStyle(
-                        fontSize: 15.0,
-                        color: Colors.white,
-                      )),
-                ),
-                TextField(
-                  cursorColor: Colors.white,
-                  maxLength: 10,
-                  controller: _textController,
-                  obscureText: false,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      helperStyle: TextStyle(color: Colors.white),
-                      hintStyle: TextStyle(color: Colors.white),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      )),
-                  onChanged: (text) {
-                    setState(() {
-                      widget.sharedData.title = text;
-                    });
-                  },
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Visibility(
-                      child: Text(widget.sharedData.date,
-                          style: const TextStyle(
-                            color: Colors.white,
-                          )),
-                      visible: _visibility,
-                    ),
-                    Visibility(
-                      child: IconButton(
-                        onPressed: () {
-                          Future<DateTime?> selectedDate = showDatePicker(
-                            context: context,
-                            initialDate: DateFormat("yyyy-MM-dd")
-                                .parse(widget.sharedData.date),
-                            firstDate: DateTime(2022),
-                            lastDate: DateTime(2050),
-                          );
-                          selectedDate.then((dateTime) {
-                            setState(() {
-                              widget.sharedData.date =
-                                  DateFormat('yyyy-MM-dd').format(dateTime!);
-                            });
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.calendar_today_outlined,
-                          color: Colors.white,
-                        ),
-                      ),
-                      visible: _visibility,
-                    ),
-                  ],
-                ),
-                ToggleButtons(
-                  color: Colors.white,
-                  children: const [
-                    Text('Sun'),
-                    Text('Mon'),
-                    Text('Tue'),
-                    Text('Wed'),
-                    Text('Thur'),
-                    Text('Fri'),
-                    Text('Sat')
-                  ],
-                  onPressed: (int index) {
-                    setState(() {
-                      widget.sharedData.selectedWeek[index] =
-                          !widget.sharedData.selectedWeek[index];
-                      _getVisibility();
-                    });
-                  },
-                  isSelected: widget.sharedData.selectedWeek,
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  height: 50.0,
-                  child: const Text('How much earlier?',
-                      style: TextStyle(
-                        fontSize: 15.0,
-                        color: Colors.white,
-                      )),
-                ),
-                NumberPicker(
-                  textStyle: (const TextStyle(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              child: const Text('Time for alarm',
+                  style: TextStyle(
                     fontSize: 15.0,
-                    color: Colors.white,
                   )),
-                  value: widget.sharedData.difference,
-                  minValue: 0,
-                  maxValue: 60,
-                  onChanged: (value) =>
-                      setState(() => widget.sharedData.difference = value),
-                ),
-                const Text('When raining or snowing, alarms ',
-                    style: TextStyle(
-                      color: Colors.white,
-                    )),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      widget.sharedData.difference.toString(),
-                      style: const TextStyle(
-                        fontSize: 30.0,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const Text(' minutes earlier.',
-                        style: TextStyle(
-                          color: Colors.white,
-                        )),
-                  ],
-                ),
-              ]),
             ),
-          ),
-        ],
+            TextButton(
+                onPressed: () {
+                  _showTimePicker();
+                },
+                child: Text(
+                  widget.sharedData.time,
+                  style: const TextStyle(
+                    fontSize: 30.0,
+                  ),
+                )),
+            Container(
+              alignment: Alignment.centerLeft,
+              height: 50.0,
+              child: const Text('Title',
+                  style: TextStyle(
+                    fontSize: 15.0,
+                  )),
+            ),
+            TextField(
+              maxLength: 10,
+              controller: _textController,
+              obscureText: false,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  enabledBorder: UnderlineInputBorder()),
+              onChanged: (text) {
+                setState(() {
+                  widget.sharedData.title = text;
+                });
+              },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Visibility(
+                  child: Text(widget.sharedData.date, style: const TextStyle()),
+                  visible: _visibility,
+                ),
+                Visibility(
+                  child: IconButton(
+                    onPressed: () {
+                      Future<DateTime?> selectedDate = showDatePicker(
+                        context: context,
+                        initialDate: DateFormat("yyyy-MM-dd")
+                            .parse(widget.sharedData.date),
+                        firstDate: DateTime(2022),
+                        lastDate: DateTime(2050),
+                      );
+                      selectedDate.then((dateTime) {
+                        setState(() {
+                          widget.sharedData.date =
+                              DateFormat('yyyy-MM-dd').format(dateTime!);
+                        });
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.calendar_today_outlined,
+                    ),
+                  ),
+                  visible: _visibility,
+                ),
+              ],
+            ),
+            ToggleButtons(
+              children: const [
+                Text('Sun'),
+                Text('Mon'),
+                Text('Tue'),
+                Text('Wed'),
+                Text('Thur'),
+                Text('Fri'),
+                Text('Sat'),
+              ],
+              onPressed: (int index) {
+                setState(() {
+                  widget.sharedData.selectedWeek[index] =
+                      !widget.sharedData.selectedWeek[index];
+                  _getVisibility();
+                });
+              },
+              isSelected: widget.sharedData.selectedWeek,
+            ),
+            Container(
+              alignment: Alignment.centerLeft,
+              height: 50.0,
+              child: const Text('How much earlier?',
+                  style: TextStyle(
+                    fontSize: 15.0,
+                  )),
+            ),
+            NumberPicker(
+              textStyle: (const TextStyle(
+                fontSize: 15.0,
+              )),
+              value: widget.sharedData.difference,
+              minValue: 0,
+              maxValue: 60,
+              onChanged: (value) =>
+                  setState(() => widget.sharedData.difference = value),
+            ),
+            const Text('When raining or snowing, alarms ', style: TextStyle()),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  widget.sharedData.difference.toString(),
+                  style: const TextStyle(
+                    fontSize: 30.0,
+                  ),
+                ),
+                const Text(
+                  ' minutes earlier.',
+                ),
+              ],
+            ),
+          ]),
+        ),
       ),
     );
   }

@@ -29,4 +29,42 @@ class DateTimeFormat {
       DateTime.now().day + 1,
     ));
   }
+
+  static String getToday() {
+    return DateFormat('yyyy-MM-dd').format(DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    ));
+  }
+
+  static bool getWeekday(List<bool> selectedWeek) {
+    bool _isSelected = false;
+    for (int i=0; i < selectedWeek.length; i++) {
+      if (selectedWeek[i]) {
+       if (i==DateTime.now().weekday) {
+         _isSelected = true;
+         break;
+       } else {
+         _isSelected = false;
+       }
+      } else {
+        _isSelected = false;
+      }
+    }
+    return _isSelected;
+  }
+
+  static bool isContain(List<bool> selectedWeek) {
+    bool isTrue = false;
+    for (int i = 0; i < selectedWeek.length; i++) {
+      if (selectedWeek[i]) {
+        isTrue = true;
+        break;
+      } else {
+        isTrue = false;
+      }
+    }
+    return isTrue;
+  }
 }
