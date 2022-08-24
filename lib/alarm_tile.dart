@@ -14,11 +14,7 @@ class AlarmTile extends StatefulWidget {
 }
 
 class _AlarmTileState extends State<AlarmTile> {
-  resetList(dynamic value) {
-    widget.sharedDataList.remove(value);
-    saveList(widget.sharedDataList);
-  }
-  saveList(List<SharedAlarm> sharedDataList) async{
+  saveList(List<SharedAlarm> sharedDataList) async {
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
     _prefs.clear();
     final String encodedData = SharedAlarm.encode(sharedDataList);
@@ -28,58 +24,63 @@ class _AlarmTileState extends State<AlarmTile> {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Text(widget.sharedDataList[widget.index].title,
-          style: const TextStyle(
-          )),
-      title: Text(widget.sharedDataList[widget.index].time,
-          style: const TextStyle(
-            fontSize: 30.0,
-          )),
-      subtitle: Text(
-          'When raining or snowing, alarms ' +
-              widget.sharedDataList[widget.index].difference.toString() +
-              ' minutes earlier.',
-          style: const TextStyle(
-          )),
-      trailing: Switch(
-        value: widget.sharedDataList[widget.index].isOn,
-        onChanged: (value) {
-          setState(() {
-            widget.sharedDataList[widget.index].isOn = value;
-          });
-          saveList(widget.sharedDataList);
-        }),
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return AddAlarmScreen(
-            sharedDataList: widget.sharedDataList,
-            sharedData: widget.sharedDataList[widget.index],
-            index: widget.index,
-          );
-        })).then((value) => setState(() {}));
+    Offset _tapPosition = Offset.zero;
+    return GestureDetector(
+      onTapDown: (TapDownDetails details) {
+        _tapPosition = details.globalPosition;
       },
-      onLongPress: () {
-        Offset _tapPosition = Offset.zero;
-        final RenderObject? overlay =
-            Overlay.of(context)!.context.findRenderObject();
-        showMenu(
-            context: context,
-            position: RelativeRect.fromRect(_tapPosition & const Size(40, 40),
-                Offset.zero & overlay!.semanticBounds.size),
-            items: <PopupMenuEntry>[
-              PopupMenuItem(
-                  value: widget.index,
-                  child: Row(
-                    children: const [
-                      Text("Delete"),
-                      Icon(Icons.close),
-                    ],
-                  ))
-            ]).then((value) => setState(()  {
-            resetList(value);
-        }));
-      },
+      child: ListTile(
+        leading: Text(
+          widget.sharedDataList[widget.index].title,
+        ),
+        title: Text(widget.sharedDataList[widget.index].time,
+            style: const TextStyle(
+              fontSize: 30.0,
+            )),
+        subtitle: Text(
+            'When raining or snowing, alarms ' +
+                widget.sharedDataList[widget.index].difference.toString() +
+                ' minutes earlier.',
+            style: const TextStyle()),
+        trailing: Switch(
+            value: widget.sharedDataList[widget.index].isOn,
+            onChanged: (value) {
+              setState(() {
+                widget.sharedDataList[widget.index].isOn = value;
+              });
+              saveList(widget.sharedDataList);
+            }),
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return AddAlarmScreen(
+              sharedDataList: widget.sharedDataList,
+              sharedData: widget.sharedDataList[widget.index],
+              index: widget.index,
+            );
+          })).then((value) => setState(() {}));
+        },
+        onLongPress: () {
+          final RenderObject? overlay =
+              Overlay.of(context)!.context.findRenderObject();
+          showMenu(
+              context: context,
+              position: RelativeRect.fromRect(_tapPosition & const Size(40, 40),
+                  Offset.zero & overlay!.semanticBounds.size),
+              items: <PopupMenuEntry>[
+                PopupMenuItem(
+                    value: widget.index,
+                    child: Row(
+                      children: const [
+                        Text("Delete"),
+                        Icon(Icons.close),
+                      ],
+                    ))
+              ]).then((value) => setState(() {
+                widget.sharedDataList.removeAt(value);
+                saveList(widget.sharedDataList);
+              }));
+        },
+      ),
     );
   }
 }
