@@ -111,7 +111,10 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
             onPressed: () {
               _saveList();
             },
-            child: const Text("Save"),
+            child: const Text(
+              "Save",
+              style: TextStyle(color: Colors.greenAccent),
+            ),
           ),
         ],
       ),
@@ -134,6 +137,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                   widget.sharedData.time,
                   style: const TextStyle(
                     fontSize: 30.0,
+                    color: Colors.greenAccent,
                   ),
                 )),
             Container(

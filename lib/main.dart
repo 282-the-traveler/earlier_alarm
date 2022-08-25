@@ -16,7 +16,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Earlier alarm',
       theme: ThemeData(
-        primarySwatch: Colors.cyan,
         scaffoldBackgroundColor: Colors.white70
       ),
       darkTheme: ThemeData.dark(),
