@@ -14,9 +14,22 @@ class AlarmTile extends StatefulWidget {
 }
 
 class _AlarmTileState extends State<AlarmTile> {
+  @override
+  void initState() {
+    super.initState();
+    getSharedDataList();
+  }
+
+  Future<List<SharedAlarm>> getSharedDataList() async {
+    final SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final String? sharedJsonData = _prefs.getString(widget.sharedDataList[widget.index].sharedDataName);
+    widget.sharedDataList = SharedAlarm.decode(sharedJsonData!);
+    return widget.sharedDataList;
+  }
+
   saveList(List<SharedAlarm> sharedDataList) async {
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
-    _prefs.clear();
+    _prefs.remove(sharedDataList[widget.index].sharedDataName);
     final String encodedData = SharedAlarm.encode(sharedDataList);
     await _prefs.setString(
         sharedDataList[widget.index].sharedDataName, encodedData);
@@ -78,6 +91,7 @@ class _AlarmTileState extends State<AlarmTile> {
               ]).then((value) => setState(() {
                 widget.sharedDataList.removeAt(value);
                 saveList(widget.sharedDataList);
+                getSharedDataList();
               }));
         },
       ),
