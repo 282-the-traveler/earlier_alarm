@@ -1,7 +1,9 @@
+import 'package:earlier_alarm/data/shared_provider.dart';
 import 'package:earlier_alarm/loading.dart';
 import 'package:earlier_alarm/stop_watch.dart';
 import 'package:earlier_alarm/weather.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,11 +17,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Earlier alarm',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white70
-      ),
+      theme: ThemeData(scaffoldBackgroundColor: Colors.white70),
       darkTheme: ThemeData.dark(),
-      home: const MyHomePage(),
+      home: ChangeNotifierProvider(
+        create: (BuildContext context) => SharedProvider(),
+        child: const MyHomePage(),
+      ),
     );
   }
 }

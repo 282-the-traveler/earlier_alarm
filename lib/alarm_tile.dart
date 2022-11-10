@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AlarmTile extends StatefulWidget {
-  AlarmTile(this.sharedDataList, this.index);
+  AlarmTile(this.sharedDataList, this.index, {Key? key}) : super(key: key);
 
   List<SharedAlarm> sharedDataList = [];
   int index;
@@ -22,7 +22,8 @@ class _AlarmTileState extends State<AlarmTile> {
 
   Future<List<SharedAlarm>> getSharedDataList() async {
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
-    final String? sharedJsonData = _prefs.getString(widget.sharedDataList[widget.index].sharedDataName);
+    final String? sharedJsonData =
+        _prefs.getString(widget.sharedDataList[widget.index].sharedDataName);
     widget.sharedDataList = SharedAlarm.decode(sharedJsonData!);
     return widget.sharedDataList;
   }
