@@ -1,6 +1,7 @@
 import 'package:earlier_alarm/data/datetime_format.dart';
 import 'package:earlier_alarm/data/shared_alarm.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedProvider extends ChangeNotifier {
   List<SharedAlarm> _sharedDataList = [];
@@ -44,6 +45,13 @@ class SharedProvider extends ChangeNotifier {
   void addSharedData(SharedAlarm sharedAlarm) {
     _sharedDataList.add(sharedAlarm);
     notifyListeners();
+  }
+
+  void saveList() async {
+    final SharedPreferences _prefs = await SharedPreferences.getInstance();
+    _prefs.remove(_sharedDataList[_index].sharedDataName);
+    final String encodedData = SharedAlarm.encode(_sharedDataList);
+    await _prefs.setString(_sharedDataList[_index].sharedDataName, encodedData);
   }
 
   void removeSharedData(int value) {

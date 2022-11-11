@@ -1,13 +1,12 @@
 import 'package:earlier_alarm/add_alarm.dart';
 import 'package:earlier_alarm/data/shared_alarm.dart';
+import 'package:earlier_alarm/providers/shared_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AlarmTile extends StatefulWidget {
-  List<SharedAlarm> sharedDataList = [];
-  int index;
-
-  AlarmTile(this.sharedDataList, this.index, {Key? key}) : super(key: key);
+  AlarmTile({Key? key}) : super(key: key);
 
   @override
   State<AlarmTile> createState() => _AlarmTileState();
@@ -21,23 +20,29 @@ class _AlarmTileState extends State<AlarmTile> {
   }
 
   Future<List<SharedAlarm>> getSharedDataList() async {
+    List<SharedAlarm> sharedDataList =
+        context.read<SharedProvider>().sharedDataList;
+    int index = context.read<SharedProvider>().index;
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
     final String? sharedJsonData =
-        _prefs.getString(widget.sharedDataList[widget.index].sharedDataName);
-    widget.sharedDataList = SharedAlarm.decode(sharedJsonData!);
-    return widget.sharedDataList;
+        _prefs.getString(sharedDataList[index].sharedDataName);
+    sharedDataList = SharedAlarm.decode(sharedJsonData!);
+    return sharedDataList;
   }
 
-  saveList(List<SharedAlarm> sharedDataList) async {
+  saveList(List<SharedAlarm> sharedDataList, int index) async {
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
-    _prefs.remove(sharedDataList[widget.index].sharedDataName);
+    _prefs.remove(sharedDataList[index].sharedDataName);
     final String encodedData = SharedAlarm.encode(sharedDataList);
-    await _prefs.setString(
-        sharedDataList[widget.index].sharedDataName, encodedData);
+    await _prefs.setString(sharedDataList[index].sharedDataName, encodedData);
   }
 
   @override
   Widget build(BuildContext context) {
+    List<SharedAlarm> sharedDataList =
+        context.read<SharedProvider>().sharedDataList;
+    int index = context.read<SharedProvider>().index;
+
     Offset _tapPosition = Offset.zero;
     return GestureDetector(
       onTapDown: (TapDownDetails details) {
@@ -45,31 +50,30 @@ class _AlarmTileState extends State<AlarmTile> {
       },
       child: ListTile(
         leading: Text(
-          widget.sharedDataList[widget.index].title,
+          sharedDataList[index].title,
         ),
-        title: Text(widget.sharedDataList[widget.index].time,
+        title: Text(sharedDataList[index].time,
             style: const TextStyle(
               fontSize: 30.0,
             )),
         subtitle: Text(
             'When raining or snowing, alarms ' +
-                widget.sharedDataList[widget.index].difference.toString() +
+                sharedDataList[index].difference.toString() +
                 ' minutes earlier.',
             style: const TextStyle()),
         trailing: Switch(
-            value: widget.sharedDataList[widget.index].isOn,
+            value: sharedDataList[index].isOn,
             onChanged: (value) {
               setState(() {
-                widget.sharedDataList[widget.index].isOn = value;
+                sharedDataList[index].isOn = value;
               });
-              saveList(widget.sharedDataList);
+              saveList(sharedDataList, index);
             }),
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
             return AddAlarmScreen(
-              sharedDataList: widget.sharedDataList,
-              sharedData: widget.sharedDataList[widget.index],
-              index: widget.index,
+              sharedData: sharedDataList[index],
+              index: index,
             );
           })).then((value) => setState(() {}));
         },
@@ -82,18 +86,28 @@ class _AlarmTileState extends State<AlarmTile> {
                   Offset.zero & overlay!.semanticBounds.size),
               items: <PopupMenuEntry>[
                 PopupMenuItem(
-                    value: widget.index,
+                    value: index,
                     child: Row(
                       children: const [
                         Text("Delete"),
                         Icon(Icons.close),
                       ],
                     ))
-              ]).then((value) => setState(() {
-                widget.sharedDataList.removeAt(value);
-                saveList(widget.sharedDataList);
-                getSharedDataList();
-              }));
+              ]).then(
+            (value) {
+              SharedProvider sharedProvider = Provider.of<SharedProvider>(
+                context,
+                listen: false,
+              );
+              sharedProvider.removeSharedData(value);
+              sharedProvider.saveList();
+              setState(
+                () {
+                  getSharedDataList();
+                },
+              );
+            },
+          );
         },
       ),
     );

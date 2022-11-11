@@ -1,4 +1,4 @@
-import 'package:earlier_alarm/data/weather_provider.dart';
+import 'package:earlier_alarm/providers/weather_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:earlier_alarm/data/my_position.dart';
 import 'package:earlier_alarm/current_alarm.dart';
@@ -31,7 +31,10 @@ class _LoadingState extends State<Loading> {
     String weatherImage =
         weatherConditions.getWeatherImage(condition, sunrise, sunset);
 
-    WeatherProvider weatherProvider = Provider.of<WeatherProvider>(context, listen: false);
+    WeatherProvider weatherProvider = Provider.of<WeatherProvider>(
+      context,
+      listen: false,
+    );
     weatherProvider.setTemperature(temperature);
     weatherProvider.setWeatherImage(weatherImage);
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {

@@ -1,5 +1,5 @@
-import 'package:earlier_alarm/data/shared_provider.dart';
-import 'package:earlier_alarm/data/weather_provider.dart';
+import 'package:earlier_alarm/providers/shared_provider.dart';
+import 'package:earlier_alarm/providers/weather_provider.dart';
 import 'package:earlier_alarm/loading.dart';
 import 'package:earlier_alarm/stop_watch.dart';
 import 'package:earlier_alarm/weather.dart';

@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:earlier_alarm/alert_alarm.dart';
 import 'package:earlier_alarm/data/datetime_format.dart';
 import 'package:earlier_alarm/data/my_position.dart';
-import 'package:earlier_alarm/data/shared_provider.dart';
+import 'package:earlier_alarm/providers/shared_provider.dart';
 import 'package:earlier_alarm/data/weather_conditions.dart';
-import 'package:earlier_alarm/data/weather_provider.dart';
+import 'package:earlier_alarm/providers/weather_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -26,18 +26,26 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
 
   Future<List<SharedAlarm>> getSharedDataList(BuildContext context) async {
-    List<SharedAlarm> sharedDataList = context.read<SharedProvider>().sharedDataList;
+    List<SharedAlarm> sharedDataList =
+        context.read<SharedProvider>().sharedDataList;
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
     final String? sharedJsonData = _prefs.getString(sharedDataName);
     sharedDataList = SharedAlarm.decode(sharedJsonData!);
-    SharedProvider sharedProvider = Provider.of<SharedProvider>(context, listen: false);
+    SharedProvider sharedProvider = Provider.of<SharedProvider>(
+      context,
+      listen: false,
+    );
     sharedProvider.setSharedDataList(sharedDataList);
     return sharedDataList;
   }
 
   Timer runAlarm(BuildContext context) {
-    List<SharedAlarm> sharedDataList = context.read<SharedProvider>().sharedDataList;
-    return Timer.periodic(Duration(minutes: 1), (timer) async {
+    List<SharedAlarm> sharedDataList =
+        context.read<SharedProvider>().sharedDataList;
+    return Timer.periodic(
+        Duration(
+          minutes: 1,
+        ), (timer) async {
       List<String> _alarmList = [];
       List<String> _calculatedAlarmList = [];
       for (var alarm in sharedDataList) {
@@ -72,7 +80,11 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   }
 
   void playAlarm(BuildContext context) {
-    FlutterRingtonePlayer.playAlarm(volume: 5, looping: true, asAlarm: true);
+    FlutterRingtonePlayer.playAlarm(
+      volume: 5,
+      looping: true,
+      asAlarm: true,
+    );
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return const AlertAlarm();
     }));
@@ -92,8 +104,8 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SharedProvider sharedProvider = Provider.of<SharedProvider>(context, listen: false);
-    List<SharedAlarm> sharedDataList = context.read<SharedProvider>().sharedDataList;
+    List<SharedAlarm> sharedDataList =
+        context.read<SharedProvider>().sharedDataList;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -126,8 +138,12 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                 DateTimeFormat.getSystemDateTime(),
               );
             }),
-            SvgPicture.asset(context.read<WeatherProvider>().weatherImage),
-            Text(context.read<WeatherProvider>().temperature.toString() + "\u00B0",
+            SvgPicture.asset(
+              context.read<WeatherProvider>().weatherImage,
+            ),
+            Text(
+                context.read<WeatherProvider>().temperature.toString() +
+                    "\u00B0",
                 style: const TextStyle(
                   fontSize: 45.0,
                 )),
@@ -144,7 +160,6 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
                   return AddAlarmScreen(
-                    sharedDataList: sharedDataList,
                     sharedData: context.read<SharedProvider>().sharedAlarm,
                     index: 99,
                   );
@@ -157,7 +172,12 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                 builder: (context, snapshot) => ListView.builder(
                   itemCount: sharedDataList.length,
                   itemBuilder: (context, index) {
-                    return AlarmTile(sharedDataList, index);
+                    SharedProvider sharedProvider = Provider.of<SharedProvider>(
+                      context,
+                      listen: false,
+                    );
+                    sharedProvider.setIndex(index);
+                    return AlarmTile();
                   },
                 ),
               ),

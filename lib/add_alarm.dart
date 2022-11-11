@@ -1,20 +1,20 @@
 import 'package:earlier_alarm/data/datetime_format.dart';
 import 'package:earlier_alarm/data/shared_alarm.dart';
+import 'package:earlier_alarm/providers/shared_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 class AddAlarmScreen extends StatefulWidget {
   AddAlarmScreen({
     required this.sharedData,
-    required this.sharedDataList,
     required this.index,
   });
 
   SharedAlarm sharedData;
-  List<SharedAlarm> sharedDataList = [];
   int index;
 
   @override
@@ -40,6 +40,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   }
 
   Future<void> _saveList() async {
+    List<SharedAlarm> sharedDataList = context.read<SharedProvider>().sharedDataList;
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
 
     SharedAlarm _sharedData = SharedAlarm(
@@ -62,9 +63,9 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     if (_isEdit()) {
       widget.sharedData = _sharedData;
     } else {
-      widget.sharedDataList.add(_sharedData);
+      sharedDataList.add(_sharedData);
     }
-    final String encodedData = SharedAlarm.encode(widget.sharedDataList);
+    final String encodedData = SharedAlarm.encode(sharedDataList);
     _prefs.clear();
     await _prefs.setString(widget.sharedData.sharedDataName, encodedData);
     Navigator.pop(context, "save");
