@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AlarmTile extends StatefulWidget {
-  AlarmTile(this.sharedDataList, this.index, {Key? key}) : super(key: key);
-
   List<SharedAlarm> sharedDataList = [];
   int index;
+
+  AlarmTile(this.sharedDataList, this.index, {Key? key}) : super(key: key);
 
   @override
   State<AlarmTile> createState() => _AlarmTileState();

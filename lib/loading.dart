@@ -1,8 +1,9 @@
+import 'package:earlier_alarm/data/weather_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:earlier_alarm/data/my_position.dart';
 import 'package:earlier_alarm/current_alarm.dart';
+import 'package:provider/provider.dart';
 import 'data/weather_conditions.dart';
-
 
 class Loading extends StatefulWidget {
   const Loading({Key? key}) : super(key: key);
@@ -29,11 +30,12 @@ class _LoadingState extends State<Loading> {
     WeatherConditions weatherConditions = WeatherConditions();
     String weatherImage =
         weatherConditions.getWeatherImage(condition, sunrise, sunset);
+
+    WeatherProvider weatherProvider = Provider.of<WeatherProvider>(context, listen: false);
+    weatherProvider.setTemperature(temperature);
+    weatherProvider.setWeatherImage(weatherImage);
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return CurrentAlarmScreen(
-        temperature: temperature,
-        weatherImage: weatherImage,
-      );
+      return CurrentAlarmScreen();
     }));
   }
 

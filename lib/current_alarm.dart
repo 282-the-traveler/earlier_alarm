@@ -2,10 +2,13 @@ import 'dart:async';
 import 'package:earlier_alarm/alert_alarm.dart';
 import 'package:earlier_alarm/data/datetime_format.dart';
 import 'package:earlier_alarm/data/my_position.dart';
+import 'package:earlier_alarm/data/shared_provider.dart';
 import 'package:earlier_alarm/data/weather_conditions.dart';
+import 'package:earlier_alarm/data/weather_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_builder/timer_builder.dart';
 import 'package:earlier_alarm/data/shared_alarm.dart';
@@ -13,10 +16,7 @@ import 'package:earlier_alarm/add_alarm.dart';
 import 'package:earlier_alarm/alarm_tile.dart';
 
 class CurrentAlarmScreen extends StatefulWidget {
-  CurrentAlarmScreen({this.temperature, this.weatherImage});
-
-  final dynamic temperature;
-  final dynamic weatherImage;
+  CurrentAlarmScreen();
 
   @override
   State<CurrentAlarmScreen> createState() => _CurrentAlarmScreenState();
@@ -24,21 +24,19 @@ class CurrentAlarmScreen extends StatefulWidget {
 
 class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
-  List<SharedAlarm> sharedDataList = [];
-  List<bool> selectedWeek = List.generate(
-    7,
-    (index) => false,
-  );
-  int difference = 30;
 
-  Future<List<SharedAlarm>> getSharedDataList() async {
+  Future<List<SharedAlarm>> getSharedDataList(BuildContext context) async {
+    List<SharedAlarm> sharedDataList = context.read<SharedProvider>().sharedDataList;
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
     final String? sharedJsonData = _prefs.getString(sharedDataName);
     sharedDataList = SharedAlarm.decode(sharedJsonData!);
+    SharedProvider sharedProvider = Provider.of<SharedProvider>(context, listen: false);
+    sharedProvider.setSharedDataList(sharedDataList);
     return sharedDataList;
   }
 
-  Timer runAlarm() {
+  Timer runAlarm(BuildContext context) {
+    List<SharedAlarm> sharedDataList = context.read<SharedProvider>().sharedDataList;
     return Timer.periodic(Duration(minutes: 1), (timer) async {
       List<String> _alarmList = [];
       List<String> _calculatedAlarmList = [];
@@ -49,7 +47,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
             _alarmList.add(alarm.time);
             _calculatedAlarmList.add(alarm.calculatedTime);
           } else {
-            if (DateTimeFormat.getWeekday(selectedWeek)) {
+            if (DateTimeFormat.getWeekday(alarm.selectedWeek)) {
               _alarmList.add(alarm.time);
               _calculatedAlarmList.add(alarm.calculatedTime);
             }
@@ -81,12 +79,10 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    setState(() {
-      runAlarm();
-      getSharedDataList();
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    runAlarm(context);
+    getSharedDataList(context);
   }
 
   @override
@@ -96,6 +92,8 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SharedProvider sharedProvider = Provider.of<SharedProvider>(context, listen: false);
+    List<SharedAlarm> sharedDataList = context.read<SharedProvider>().sharedDataList;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -128,8 +126,8 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                 DateTimeFormat.getSystemDateTime(),
               );
             }),
-            SvgPicture.asset(widget.weatherImage),
-            Text(widget.temperature.toString() + "\u00B0",
+            SvgPicture.asset(context.read<WeatherProvider>().weatherImage),
+            Text(context.read<WeatherProvider>().temperature.toString() + "\u00B0",
                 style: const TextStyle(
                   fontSize: 45.0,
                 )),
@@ -143,21 +141,11 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                 Icons.add,
               ),
               onPressed: () {
-                SharedAlarm sharedData = SharedAlarm(
-                    sharedDataName: 'EARLIER_ALARM',
-                    title: '',
-                    time: DateTimeFormat.getSystemTime(),
-                    difference: difference,
-                    calculatedTime: DateTimeFormat.getCalculatedTime(
-                        DateTimeFormat.getSystemTime(), difference),
-                    date: DateTimeFormat.getTomorrow(),
-                    selectedWeek: selectedWeek,
-                    isOn: true);
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
                   return AddAlarmScreen(
                     sharedDataList: sharedDataList,
-                    sharedData: sharedData,
+                    sharedData: context.read<SharedProvider>().sharedAlarm,
                     index: 99,
                   );
                 })).then((value) => setState(() {}));
@@ -165,7 +153,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
             ),
             Expanded(
               child: FutureBuilder<List<SharedAlarm>>(
-                future: getSharedDataList(),
+                future: getSharedDataList(context),
                 builder: (context, snapshot) => ListView.builder(
                   itemCount: sharedDataList.length,
                   itemBuilder: (context, index) {

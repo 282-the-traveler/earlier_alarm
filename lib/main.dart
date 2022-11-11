@@ -1,4 +1,5 @@
 import 'package:earlier_alarm/data/shared_provider.dart';
+import 'package:earlier_alarm/data/weather_provider.dart';
 import 'package:earlier_alarm/loading.dart';
 import 'package:earlier_alarm/stop_watch.dart';
 import 'package:earlier_alarm/weather.dart';
@@ -19,8 +20,15 @@ class MyApp extends StatelessWidget {
       title: 'Earlier alarm',
       theme: ThemeData(scaffoldBackgroundColor: Colors.white70),
       darkTheme: ThemeData.dark(),
-      home: ChangeNotifierProvider(
-        create: (BuildContext context) => SharedProvider(),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (BuildContext context) => WeatherProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (BuildContext context) => SharedProvider(),
+          ),
+        ],
         child: const MyHomePage(),
       ),
     );
