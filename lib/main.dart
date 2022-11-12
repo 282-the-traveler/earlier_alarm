@@ -1,4 +1,4 @@
-import 'package:earlier_alarm/providers/shared_provider.dart';
+import 'package:earlier_alarm/providers/alarm_provider.dart';
 import 'package:earlier_alarm/providers/weather_provider.dart';
 import 'package:earlier_alarm/loading.dart';
 import 'package:earlier_alarm/stop_watch.dart';
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
             create: (BuildContext context) => WeatherProvider(),
           ),
           ChangeNotifierProvider(
-            create: (BuildContext context) => SharedProvider(),
+            create: (BuildContext context) => AlarmProvider(),
           ),
         ],
         child: const MyHomePage(),

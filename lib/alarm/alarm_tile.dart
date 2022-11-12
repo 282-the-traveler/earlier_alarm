@@ -1,10 +1,10 @@
 import 'package:earlier_alarm/alarm/add_alarm_screen.dart';
-import 'package:earlier_alarm/providers/shared_provider.dart';
+import 'package:earlier_alarm/providers/alarm_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AlarmTile extends StatefulWidget {
-  AlarmTile({required this.index});
+  AlarmTile({Key? key, required this.index}) : super(key: key);
 
   int index;
 
@@ -16,12 +16,12 @@ class _AlarmTileState extends State<AlarmTile> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    context.read<SharedProvider>().sharedDataList;
+    context.read<AlarmProvider>().alarmList;
   }
 
   @override
   Widget build(BuildContext context) {
-    SharedProvider sharedProvider = Provider.of<SharedProvider>(
+    AlarmProvider alarmProvider = Provider.of<AlarmProvider>(
       context,
       listen: false,
     );
@@ -33,30 +33,29 @@ class _AlarmTileState extends State<AlarmTile> {
       },
       child: ListTile(
         leading: Text(
-          sharedProvider.sharedDataList[widget.index].title,
+          alarmProvider.alarmList[widget.index].title,
         ),
-        title: Text(sharedProvider.sharedDataList[widget.index].time,
+        title: Text(alarmProvider.alarmList[widget.index].time,
             style: const TextStyle(
               fontSize: 30.0,
             )),
         subtitle: Text(
             'When raining or snowing, alarms ' +
-                sharedProvider.sharedDataList[widget.index].difference
-                    .toString() +
+                alarmProvider.alarmList[widget.index].difference.toString() +
                 ' minutes earlier.',
             style: const TextStyle()),
         trailing: Switch(
-            value: sharedProvider.sharedDataList[widget.index].isOn,
+            value: alarmProvider.alarmList[widget.index].isOn,
             onChanged: (value) {
               setState(() {
-                sharedProvider.sharedDataList[widget.index].isOn = value;
+                alarmProvider.alarmList[widget.index].isOn = value;
               });
-              sharedProvider.setSharedDataList(sharedProvider.sharedDataList);
+              alarmProvider.setAlarmDataList(alarmProvider.alarmList);
             }),
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
             return AddAlarmScreen(
-              sharedData: sharedProvider.sharedDataList[widget.index],
+              alarm: alarmProvider.alarmList[widget.index],
               isEdit: true,
             );
           })).then((value) => setState(() {}));
@@ -84,13 +83,11 @@ class _AlarmTileState extends State<AlarmTile> {
                     ))
               ]).then(
             (value) {
-              sharedProvider.removeSharedData(value);
-              sharedProvider.setSharedDataList(sharedProvider.sharedDataList);
-              setState(
-                () {
-                  context.read<SharedProvider>().sharedDataList;
-                },
-              );
+              alarmProvider.removeAlarm(value);
+              alarmProvider.setAlarmDataList(alarmProvider.alarmList);
+              setState(() {
+                context.read<AlarmProvider>().alarmList;
+              });
             },
           );
         },

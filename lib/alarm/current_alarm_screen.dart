@@ -4,8 +4,8 @@ import 'package:earlier_alarm/alarm/alarm_tile.dart';
 import 'package:earlier_alarm/alarm/alert_alarm.dart';
 import 'package:earlier_alarm/common/datetime_format.dart';
 import 'package:earlier_alarm/data/my_position.dart';
-import 'package:earlier_alarm/model/shared_alarm.dart';
-import 'package:earlier_alarm/providers/shared_provider.dart';
+import 'package:earlier_alarm/model/alarm.dart';
+import 'package:earlier_alarm/providers/alarm_provider.dart';
 import 'package:earlier_alarm/data/weather_conditions.dart';
 import 'package:earlier_alarm/providers/weather_provider.dart';
 import 'package:flutter/material.dart';
@@ -25,15 +25,15 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
 
   Timer runAlarm(BuildContext context) {
-    List<SharedAlarm> sharedDataList =
-        context.read<SharedProvider>().sharedDataList;
+    List<Alarm> alarmList =
+        context.read<AlarmProvider>().alarmList;
     return Timer.periodic(
         const Duration(
           minutes: 1,
         ), (timer) async {
       List<String> _alarmList = [];
       List<String> _calculatedAlarmList = [];
-      for (var alarm in sharedDataList) {
+      for (var alarm in alarmList) {
         if (alarm.isOn) {
           if (alarm.date.contains(DateTimeFormat.getToday()) &&
               !DateTimeFormat.isContain(alarm.selectedWeek)) {
@@ -79,13 +79,13 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     runAlarm(context);
-    context.read<SharedProvider>().sharedDataList;
+    context.read<AlarmProvider>().alarmList;
   }
 
   @override
   Widget build(BuildContext context) {
-    List<SharedAlarm> sharedDataList =
-        context.read<SharedProvider>().sharedDataList;
+    List<Alarm> sharedDataList =
+        context.read<AlarmProvider>().alarmList;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -144,8 +144,8 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                   MaterialPageRoute(
                     builder: (context) {
                       return AddAlarmScreen(
-                        sharedData:
-                            context.read<SharedProvider>().disposeSharedData(),
+                        alarm:
+                            context.read<AlarmProvider>().disposeAlarm(),
                         isEdit: false,
                       );
                     },

@@ -1,6 +1,6 @@
 import 'package:earlier_alarm/common/datetime_format.dart';
-import 'package:earlier_alarm/model/shared_alarm.dart';
-import 'package:earlier_alarm/providers/shared_provider.dart';
+import 'package:earlier_alarm/model/alarm.dart';
+import 'package:earlier_alarm/providers/alarm_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -8,11 +8,11 @@ import 'package:numberpicker/numberpicker.dart';
 
 class AddAlarmScreen extends StatefulWidget {
   AddAlarmScreen({
-    required this.sharedData,
+    required this.alarm,
     required this.isEdit,
   });
 
-  SharedAlarm sharedData;
+  Alarm alarm;
   bool isEdit;
 
   @override
@@ -23,7 +23,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   bool _visibility = true;
 
   late TextEditingController _textController =
-      TextEditingController(text: widget.sharedData.title);
+      TextEditingController(text: widget.alarm.title);
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   @override
   void dispose() {
     _textController.dispose();
-    context.read<SharedProvider>().disposeSharedData();
+    context.read<AlarmProvider>().disposeAlarm();
     super.dispose();
   }
 
@@ -45,17 +45,17 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     );
 
     print (result.toString());
-    print (widget.sharedData.time);
+    print (widget.alarm.time);
     if (result != null) {
       setState(() {
-        widget.sharedData.time = result.format(context);
-        print (widget.sharedData.time);
+        widget.alarm.time = result.format(context);
+        print (widget.alarm.time);
       });
     }
   }
 
   void _getVisibility() {
-    if (widget.sharedData.selectedWeek.contains(true)) {
+    if (widget.alarm.selectedWeek.contains(true)) {
       _visibility = false;
     } else {
       _visibility = true;
@@ -64,7 +64,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SharedProvider sharedProvider = Provider.of<SharedProvider>(
+    AlarmProvider alarmProvider = Provider.of<AlarmProvider>(
       context,
       listen: false,
     );
@@ -78,15 +78,15 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
           TextButton(
             onPressed: () {
               String calculatedTime = DateTimeFormat.getCalculatedTime(
-                widget.sharedData.time,
-                widget.sharedData.difference,
+                widget.alarm.time,
+                widget.alarm.difference,
               );
-              widget.sharedData.calculatedTime = calculatedTime;
+              widget.alarm.calculatedTime = calculatedTime;
 
               if (widget.isEdit) {
-                sharedProvider.setSharedAlarm(widget.sharedData);
+                alarmProvider.setAlarm(widget.alarm);
               } else {
-                sharedProvider.addSharedData(widget.sharedData);
+                alarmProvider.addAlarm(widget.alarm);
               }
               Navigator.pop(context, "save");
             },
@@ -113,7 +113,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                   _showTimePicker();
                 },
                 child: Text(
-                  widget.sharedData.time,
+                  widget.alarm.time,
                   style: const TextStyle(
                     fontSize: 30.0,
                     color: Colors.greenAccent,
@@ -136,7 +136,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                   enabledBorder: UnderlineInputBorder()),
               onChanged: (text) {
                 setState(() {
-                  widget.sharedData.title = text;
+                  widget.alarm.title = text;
                 });
               },
             ),
@@ -144,7 +144,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Visibility(
-                  child: Text(widget.sharedData.date, style: const TextStyle()),
+                  child: Text(widget.alarm.date, style: const TextStyle()),
                   visible: _visibility,
                 ),
                 Visibility(
@@ -153,13 +153,13 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                       Future<DateTime?> selectedDate = showDatePicker(
                         context: context,
                         initialDate: DateFormat("yyyy-MM-dd")
-                            .parse(widget.sharedData.date),
+                            .parse(widget.alarm.date),
                         firstDate: DateTime(2022),
                         lastDate: DateTime(2050),
                       );
                       selectedDate.then((dateTime) {
                         setState(() {
-                          widget.sharedData.date =
+                          widget.alarm.date =
                               DateFormat('yyyy-MM-dd').format(dateTime!);
                         });
                       });
@@ -184,12 +184,12 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               ],
               onPressed: (int index) {
                 setState(() {
-                  widget.sharedData.selectedWeek[index] =
-                      !widget.sharedData.selectedWeek[index];
+                  widget.alarm.selectedWeek[index] =
+                      !widget.alarm.selectedWeek[index];
                   _getVisibility();
                 });
               },
-              isSelected: widget.sharedData.selectedWeek,
+              isSelected: widget.alarm.selectedWeek,
             ),
             Container(
               alignment: Alignment.centerLeft,
@@ -203,11 +203,11 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               textStyle: (const TextStyle(
                 fontSize: 15.0,
               )),
-              value: widget.sharedData.difference,
+              value: widget.alarm.difference,
               minValue: 0,
               maxValue: 60,
               onChanged: (value) =>
-                  setState(() => widget.sharedData.difference = value),
+                  setState(() => widget.alarm.difference = value),
             ),
             const Text('When raining or snowing, alarms ', style: TextStyle()),
             Row(
@@ -215,7 +215,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  widget.sharedData.difference.toString(),
+                  widget.alarm.difference.toString(),
                   style: const TextStyle(
                     fontSize: 30.0,
                   ),

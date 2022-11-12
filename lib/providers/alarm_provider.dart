@@ -1,12 +1,12 @@
 import 'package:earlier_alarm/common/datetime_format.dart';
-import 'package:earlier_alarm/model/shared_alarm.dart';
+import 'package:earlier_alarm/model/alarm.dart';
 import 'package:flutter/material.dart';
 
-class SharedProvider extends ChangeNotifier {
-  List<SharedAlarm> _sharedDataList = [];
+class AlarmProvider extends ChangeNotifier {
+  List<Alarm> _alarmList = [];
   int _index = 0;
-  SharedAlarm _sharedAlarm = SharedAlarm(
-    sharedDataName: 'EARLIER_ALARM',
+  Alarm _alarm = Alarm(
+    id: 'EARLIER_ALARM',
     title: '',
     time: DateTimeFormat.getSystemTime(),
     difference: 30,
@@ -21,16 +21,16 @@ class SharedProvider extends ChangeNotifier {
   );
   bool _isOn = true;
 
-  List<SharedAlarm> get sharedDataList => _sharedDataList;
+  List<Alarm> get alarmList => _alarmList;
 
   int get index => _index;
 
-  SharedAlarm get sharedAlarm => _sharedAlarm;
+  Alarm get sharedAlarm => _alarm;
 
   bool get isOn => _isOn;
 
-  void setSharedDataList(List<SharedAlarm> value) {
-    _sharedDataList = value;
+  void setAlarmDataList(List<Alarm> value) {
+    _alarmList = value;
     notifyListeners();
   }
 
@@ -39,19 +39,19 @@ class SharedProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setSharedAlarm(SharedAlarm value) {
-    _sharedAlarm = value;
+  void setAlarm(Alarm value) {
+    _alarm = value;
     notifyListeners();
   }
 
-  void addSharedData(SharedAlarm sharedAlarm) {
-    _sharedDataList.add(sharedAlarm);
+  void addAlarm(Alarm sharedAlarm) {
+    _alarmList.add(sharedAlarm);
     notifyListeners();
   }
 
-  SharedAlarm disposeSharedData() {
-    _sharedAlarm = SharedAlarm(
-      sharedDataName: 'EARLIER_ALARM',
+  Alarm disposeAlarm() {
+    _alarm = Alarm(
+      id: 'EARLIER_ALARM',
       title: '',
       time: DateTimeFormat.getSystemTime(),
       difference: 30,
@@ -64,16 +64,16 @@ class SharedProvider extends ChangeNotifier {
       ),
       isOn: true,
     );
-    return _sharedAlarm;
+    return _alarm;
   }
 
   void setIsOn(bool value) {
-    _sharedDataList[_index].isOn = value;
+    _alarmList[_index].isOn = value;
     notifyListeners();
   }
 
-  void removeSharedData(int value) {
-    _sharedDataList.removeAt(value);
+  void removeAlarm(int value) {
+    _alarmList.removeAt(value);
     notifyListeners();
   }
 }
