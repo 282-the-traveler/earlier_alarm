@@ -1,6 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 
-import 'network.dart';
+import '../common/network.dart';
 
 const apikey = '2e61909f3e8052c7fb5f5c84702e9e62';
 

@@ -1,7 +1,10 @@
 import 'dart:async';
-import 'package:earlier_alarm/alert_alarm.dart';
-import 'package:earlier_alarm/data/datetime_format.dart';
+import 'package:earlier_alarm/alarm/add_alarm_screen.dart';
+import 'package:earlier_alarm/alarm/alarm_tile.dart';
+import 'package:earlier_alarm/alarm/alert_alarm.dart';
+import 'package:earlier_alarm/common/datetime_format.dart';
 import 'package:earlier_alarm/data/my_position.dart';
+import 'package:earlier_alarm/model/shared_alarm.dart';
 import 'package:earlier_alarm/providers/shared_provider.dart';
 import 'package:earlier_alarm/data/weather_conditions.dart';
 import 'package:earlier_alarm/providers/weather_provider.dart';
@@ -9,11 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_builder/timer_builder.dart';
-import 'package:earlier_alarm/data/shared_alarm.dart';
-import 'package:earlier_alarm/add_alarm.dart';
-import 'package:earlier_alarm/alarm_tile.dart';
 
 class CurrentAlarmScreen extends StatefulWidget {
   CurrentAlarmScreen();
@@ -25,25 +24,11 @@ class CurrentAlarmScreen extends StatefulWidget {
 class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
 
-  Future<List<SharedAlarm>> getSharedDataList(BuildContext context) async {
-    List<SharedAlarm> sharedDataList =
-        context.read<SharedProvider>().sharedDataList;
-    final SharedPreferences _prefs = await SharedPreferences.getInstance();
-    final String? sharedJsonData = _prefs.getString(sharedDataName);
-    sharedDataList = SharedAlarm.decode(sharedJsonData!);
-    SharedProvider sharedProvider = Provider.of<SharedProvider>(
-      context,
-      listen: false,
-    );
-    sharedProvider.setSharedDataList(sharedDataList);
-    return sharedDataList;
-  }
-
   Timer runAlarm(BuildContext context) {
     List<SharedAlarm> sharedDataList =
         context.read<SharedProvider>().sharedDataList;
     return Timer.periodic(
-        Duration(
+        const Duration(
           minutes: 1,
         ), (timer) async {
       List<String> _alarmList = [];
@@ -94,12 +79,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     runAlarm(context);
-    getSharedDataList(context);
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
+    context.read<SharedProvider>().sharedDataList;
   }
 
   @override
@@ -132,8 +112,10 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
             const SizedBox(
               height: 100.0,
             ),
-            TimerBuilder.periodic(const Duration(minutes: 1),
-                builder: (context) {
+            TimerBuilder.periodic(
+                const Duration(
+                  minutes: 1,
+                ), builder: (context) {
               return Text(
                 DateTimeFormat.getSystemDateTime(),
               );
@@ -157,29 +139,32 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                 Icons.add,
               ),
               onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
-                  return AddAlarmScreen(
-                    sharedData: context.read<SharedProvider>().sharedAlarm,
-                    index: 99,
-                  );
-                })).then((value) => setState(() {}));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return AddAlarmScreen(
+                        sharedData:
+                            context.read<SharedProvider>().disposeSharedData(),
+                        isEdit: false,
+                      );
+                    },
+                  ),
+                ).then((value) => setState(() {}));
               },
             ),
             Expanded(
-              child: FutureBuilder<List<SharedAlarm>>(
-                future: getSharedDataList(context),
-                builder: (context, snapshot) => ListView.builder(
-                  itemCount: sharedDataList.length,
-                  itemBuilder: (context, index) {
-                    SharedProvider sharedProvider = Provider.of<SharedProvider>(
-                      context,
-                      listen: false,
-                    );
-                    sharedProvider.setIndex(index);
-                    return AlarmTile();
-                  },
-                ),
+              child: ListView.builder(
+                itemCount: sharedDataList.length,
+                itemBuilder: (context, index) {
+                  SharedProvider sharedProvider = Provider.of<SharedProvider>(
+                    context,
+                    listen: false,
+                  );
+                  sharedProvider.setIndex(index);
+                  return AlarmTile(
+                    index: index,
+                  );
+                },
               ),
             ),
           ],

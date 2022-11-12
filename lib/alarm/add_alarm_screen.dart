@@ -1,5 +1,5 @@
-import 'package:earlier_alarm/data/datetime_format.dart';
-import 'package:earlier_alarm/data/shared_alarm.dart';
+import 'package:earlier_alarm/common/datetime_format.dart';
+import 'package:earlier_alarm/model/shared_alarm.dart';
 import 'package:earlier_alarm/providers/shared_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -11,11 +11,11 @@ import 'package:numberpicker/numberpicker.dart';
 class AddAlarmScreen extends StatefulWidget {
   AddAlarmScreen({
     required this.sharedData,
-    required this.index,
+    required this.isEdit,
   });
 
   SharedAlarm sharedData;
-  int index;
+  bool isEdit;
 
   @override
   State<AddAlarmScreen> createState() => _AddAlarmScreenState();
@@ -25,7 +25,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   bool _visibility = true;
 
   late TextEditingController _textController =
-      TextEditingController(text: widget.sharedData.title);
+  TextEditingController(text: widget.sharedData.title);
 
   @override
   void initState() {
@@ -60,7 +60,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     );
     _sharedData.calculatedTime = calculatedTime;
 
-    if (_isEdit()) {
+    if (widget.isEdit) {
       widget.sharedData = _sharedData;
     } else {
       sharedDataList.add(_sharedData);
@@ -69,14 +69,6 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
     _prefs.clear();
     await _prefs.setString(widget.sharedData.sharedDataName, encodedData);
     Navigator.pop(context, "save");
-  }
-
-  bool _isEdit() {
-    if (0 <= widget.index && widget.index < 99) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   Future<void> _showTimePicker() async {
@@ -207,7 +199,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               onPressed: (int index) {
                 setState(() {
                   widget.sharedData.selectedWeek[index] =
-                      !widget.sharedData.selectedWeek[index];
+                  !widget.sharedData.selectedWeek[index];
                   _getVisibility();
                 });
               },

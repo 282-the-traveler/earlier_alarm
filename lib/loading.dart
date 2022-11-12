@@ -1,7 +1,7 @@
 import 'package:earlier_alarm/providers/weather_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:earlier_alarm/data/my_position.dart';
-import 'package:earlier_alarm/current_alarm.dart';
+import 'package:earlier_alarm/alarm/current_alarm_screen.dart';
 import 'package:provider/provider.dart';
 import 'data/weather_conditions.dart';
 
