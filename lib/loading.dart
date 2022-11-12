@@ -37,15 +37,23 @@ class _LoadingState extends State<Loading> {
     );
     weatherProvider.setTemperature(temperature);
     weatherProvider.setWeatherImage(weatherImage);
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return CurrentAlarmScreen();
-    }));
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return CurrentAlarmScreen();
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: CircularProgressIndicator(),
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation(
+          Colors.greenAccent,
+        ),
+      ),
     );
   }
 }

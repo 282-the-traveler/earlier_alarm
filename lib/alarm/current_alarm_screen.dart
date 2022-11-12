@@ -113,28 +113,29 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
               height: 100.0,
             ),
             TimerBuilder.periodic(
-                const Duration(
-                  minutes: 1,
-                ), builder: (context) {
-              return Text(
-                DateTimeFormat.getSystemDateTime(),
-              );
-            }),
+              const Duration(
+                minutes: 1,
+              ),
+              builder: (context) {
+                return Text(
+                  DateTimeFormat.getSystemDateTime(),
+                );
+              },
+            ),
             SvgPicture.asset(
               context.read<WeatherProvider>().weatherImage,
             ),
             Text(
-                context.read<WeatherProvider>().temperature.toString() +
-                    "\u00B0",
-                style: const TextStyle(
-                  fontSize: 45.0,
-                )),
+              context.read<WeatherProvider>().temperature.toString() + "\u00B0",
+              style: const TextStyle(
+                fontSize: 45.0,
+              ),
+            ),
             const Divider(
               height: 15.0,
               thickness: 2.0,
             ),
             IconButton(
-              alignment: Alignment.centerLeft,
               icon: const Icon(
                 Icons.add,
               ),
@@ -154,13 +155,10 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
             ),
             Expanded(
               child: ListView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
                 itemCount: sharedDataList.length,
                 itemBuilder: (context, index) {
-                  SharedProvider sharedProvider = Provider.of<SharedProvider>(
-                    context,
-                    listen: false,
-                  );
-                  sharedProvider.setIndex(index);
                   return AlarmTile(
                     index: index,
                   );

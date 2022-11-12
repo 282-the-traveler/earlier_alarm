@@ -2,10 +2,8 @@ import 'package:earlier_alarm/common/datetime_format.dart';
 import 'package:earlier_alarm/model/shared_alarm.dart';
 import 'package:earlier_alarm/providers/shared_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 class AddAlarmScreen extends StatefulWidget {
@@ -25,7 +23,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   bool _visibility = true;
 
   late TextEditingController _textController =
-  TextEditingController(text: widget.sharedData.title);
+      TextEditingController(text: widget.sharedData.title);
 
   @override
   void initState() {
@@ -36,39 +34,8 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   @override
   void dispose() {
     _textController.dispose();
+    context.read<SharedProvider>().disposeSharedData();
     super.dispose();
-  }
-
-  Future<void> _saveList() async {
-    List<SharedAlarm> sharedDataList = context.read<SharedProvider>().sharedDataList;
-    final SharedPreferences _prefs = await SharedPreferences.getInstance();
-
-    SharedAlarm _sharedData = SharedAlarm(
-      sharedDataName: widget.sharedData.sharedDataName,
-      title: widget.sharedData.title,
-      time: widget.sharedData.time,
-      difference: widget.sharedData.difference,
-      calculatedTime: widget.sharedData.calculatedTime,
-      date: widget.sharedData.date,
-      selectedWeek: widget.sharedData.selectedWeek,
-      isOn: widget.sharedData.isOn,
-    );
-
-    String calculatedTime = DateTimeFormat.getCalculatedTime(
-      widget.sharedData.time,
-      widget.sharedData.difference,
-    );
-    _sharedData.calculatedTime = calculatedTime;
-
-    if (widget.isEdit) {
-      widget.sharedData = _sharedData;
-    } else {
-      sharedDataList.add(_sharedData);
-    }
-    final String encodedData = SharedAlarm.encode(sharedDataList);
-    _prefs.clear();
-    await _prefs.setString(widget.sharedData.sharedDataName, encodedData);
-    Navigator.pop(context, "save");
   }
 
   Future<void> _showTimePicker() async {
@@ -76,9 +43,13 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
       context: context,
       initialTime: TimeOfDay.now(),
     );
+
+    print (result.toString());
+    print (widget.sharedData.time);
     if (result != null) {
       setState(() {
         widget.sharedData.time = result.format(context);
+        print (widget.sharedData.time);
       });
     }
   }
@@ -93,6 +64,10 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SharedProvider sharedProvider = Provider.of<SharedProvider>(
+      context,
+      listen: false,
+    );
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -102,7 +77,18 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              _saveList();
+              String calculatedTime = DateTimeFormat.getCalculatedTime(
+                widget.sharedData.time,
+                widget.sharedData.difference,
+              );
+              widget.sharedData.calculatedTime = calculatedTime;
+
+              if (widget.isEdit) {
+                sharedProvider.setSharedAlarm(widget.sharedData);
+              } else {
+                sharedProvider.addSharedData(widget.sharedData);
+              }
+              Navigator.pop(context, "save");
             },
             child: const Text(
               "Save",
@@ -199,7 +185,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               onPressed: (int index) {
                 setState(() {
                   widget.sharedData.selectedWeek[index] =
-                  !widget.sharedData.selectedWeek[index];
+                      !widget.sharedData.selectedWeek[index];
                   _getVisibility();
                 });
               },

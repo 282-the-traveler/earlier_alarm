@@ -1,46 +1,30 @@
 import 'package:earlier_alarm/alarm/add_alarm_screen.dart';
-import 'package:earlier_alarm/model/shared_alarm.dart';
 import 'package:earlier_alarm/providers/shared_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AlarmTile extends StatefulWidget {
   AlarmTile({required this.index});
 
   int index;
+
   @override
   State<AlarmTile> createState() => _AlarmTileState();
 }
 
 class _AlarmTileState extends State<AlarmTile> {
   @override
-  void initState() {
-    super.initState();
-    getSharedDataList();
-  }
-
-  Future<List<SharedAlarm>> getSharedDataList() async {
-    List<SharedAlarm> sharedDataList =
-        context.read<SharedProvider>().sharedDataList;
-    final SharedPreferences _prefs = await SharedPreferences.getInstance();
-    final String? sharedJsonData =
-        _prefs.getString(sharedDataList[widget.index].sharedDataName);
-    sharedDataList = SharedAlarm.decode(sharedJsonData!);
-    return sharedDataList;
-  }
-
-  saveList(List<SharedAlarm> sharedDataList, int index) async {
-    final SharedPreferences _prefs = await SharedPreferences.getInstance();
-    _prefs.remove(sharedDataList[index].sharedDataName);
-    final String encodedData = SharedAlarm.encode(sharedDataList);
-    await _prefs.setString(sharedDataList[index].sharedDataName, encodedData);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.read<SharedProvider>().sharedDataList;
   }
 
   @override
   Widget build(BuildContext context) {
-    List<SharedAlarm> sharedDataList =
-        context.read<SharedProvider>().sharedDataList;
+    SharedProvider sharedProvider = Provider.of<SharedProvider>(
+      context,
+      listen: false,
+    );
 
     Offset _tapPosition = Offset.zero;
     return GestureDetector(
@@ -49,29 +33,30 @@ class _AlarmTileState extends State<AlarmTile> {
       },
       child: ListTile(
         leading: Text(
-          sharedDataList[widget.index].title,
+          sharedProvider.sharedDataList[widget.index].title,
         ),
-        title: Text(sharedDataList[widget.index].time,
+        title: Text(sharedProvider.sharedDataList[widget.index].time,
             style: const TextStyle(
               fontSize: 30.0,
             )),
         subtitle: Text(
             'When raining or snowing, alarms ' +
-                sharedDataList[widget.index].difference.toString() +
+                sharedProvider.sharedDataList[widget.index].difference
+                    .toString() +
                 ' minutes earlier.',
             style: const TextStyle()),
         trailing: Switch(
-            value: sharedDataList[widget.index].isOn,
+            value: sharedProvider.sharedDataList[widget.index].isOn,
             onChanged: (value) {
               setState(() {
-                sharedDataList[widget.index].isOn = value;
+                sharedProvider.sharedDataList[widget.index].isOn = value;
               });
-              saveList(sharedDataList, widget.index);
+              sharedProvider.setSharedDataList(sharedProvider.sharedDataList);
             }),
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
             return AddAlarmScreen(
-              sharedData: sharedDataList[widget.index],
+              sharedData: sharedProvider.sharedDataList[widget.index],
               isEdit: true,
             );
           })).then((value) => setState(() {}));
@@ -99,15 +84,11 @@ class _AlarmTileState extends State<AlarmTile> {
                     ))
               ]).then(
             (value) {
-              SharedProvider sharedProvider = Provider.of<SharedProvider>(
-                context,
-                listen: false,
-              );
               sharedProvider.removeSharedData(value);
-              sharedProvider.setSharedDataList(sharedDataList);
+              sharedProvider.setSharedDataList(sharedProvider.sharedDataList);
               setState(
                 () {
-                  getSharedDataList();
+                  context.read<SharedProvider>().sharedDataList;
                 },
               );
             },

@@ -2,7 +2,6 @@ import 'package:earlier_alarm/providers/shared_provider.dart';
 import 'package:earlier_alarm/providers/weather_provider.dart';
 import 'package:earlier_alarm/loading.dart';
 import 'package:earlier_alarm/stop_watch.dart';
-import 'package:earlier_alarm/weather.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -47,7 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _pages = [
     const Loading(),
-    const WeatherScreen(),
     const StopWatchScreen(),
   ];
 
@@ -57,7 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _navigatorKeyList =
         List.generate(_pages.length, (index) => GlobalKey<NavigatorState>());
@@ -97,12 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 Icons.list_alt_rounded,
               ),
               label: 'List',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.wb_sunny_outlined,
-              ),
-              label: 'Weather',
             ),
             BottomNavigationBarItem(
               icon: Icon(
