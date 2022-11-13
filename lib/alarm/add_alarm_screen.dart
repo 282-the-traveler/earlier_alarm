@@ -8,9 +8,10 @@ import 'package:numberpicker/numberpicker.dart';
 
 class AddAlarmScreen extends StatefulWidget {
   AddAlarmScreen({
+    Key? key,
     required this.alarm,
     required this.isEdit,
-  });
+  }) : super(key: key);
 
   Alarm alarm;
   bool isEdit;
@@ -41,15 +42,13 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   Future<void> _showTimePicker() async {
     final TimeOfDay? result = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: widget.isEdit
+          ? DateTimeFormat.stringToTimeOfDay(widget.alarm.time)
+          : TimeOfDay.now(),
     );
-
-    print (result.toString());
-    print (widget.alarm.time);
     if (result != null) {
       setState(() {
         widget.alarm.time = result.format(context);
-        print (widget.alarm.time);
       });
     }
   }
@@ -84,6 +83,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               widget.alarm.calculatedTime = calculatedTime;
 
               if (widget.isEdit) {
+                print(widget.alarm.time.toString());
                 alarmProvider.setAlarm(widget.alarm);
               } else {
                 alarmProvider.addAlarm(widget.alarm);
@@ -109,16 +109,17 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                   )),
             ),
             TextButton(
-                onPressed: () {
-                  _showTimePicker();
-                },
-                child: Text(
-                  widget.alarm.time,
-                  style: const TextStyle(
-                    fontSize: 30.0,
-                    color: Colors.greenAccent,
-                  ),
-                )),
+              onPressed: () {
+                _showTimePicker();
+              },
+              child: Text(
+                widget.alarm.time,
+                style: const TextStyle(
+                  fontSize: 30.0,
+                  color: Colors.greenAccent,
+                ),
+              ),
+            ),
             Container(
               alignment: Alignment.centerLeft,
               height: 50.0,
@@ -152,8 +153,8 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
                     onPressed: () {
                       Future<DateTime?> selectedDate = showDatePicker(
                         context: context,
-                        initialDate: DateFormat("yyyy-MM-dd")
-                            .parse(widget.alarm.date),
+                        initialDate:
+                            DateFormat("yyyy-MM-dd").parse(widget.alarm.date),
                         firstDate: DateTime(2022),
                         lastDate: DateTime(2050),
                       );

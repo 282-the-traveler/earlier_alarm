@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class DateTimeFormat {
@@ -40,14 +41,14 @@ class DateTimeFormat {
 
   static bool getWeekday(List<bool> selectedWeek) {
     bool _isSelected = false;
-    for (int i=0; i < selectedWeek.length; i++) {
+    for (int i = 0; i < selectedWeek.length; i++) {
       if (selectedWeek[i]) {
-       if (i==DateTime.now().weekday) {
-         _isSelected = true;
-         break;
-       } else {
-         _isSelected = false;
-       }
+        if (i == DateTime.now().weekday) {
+          _isSelected = true;
+          break;
+        } else {
+          _isSelected = false;
+        }
       } else {
         _isSelected = false;
       }
@@ -66,5 +67,10 @@ class DateTimeFormat {
       }
     }
     return isTrue;
+  }
+
+  static TimeOfDay stringToTimeOfDay(String time) {
+    final format = DateFormat.jm();
+    return TimeOfDay.fromDateTime(format.parse(time));
   }
 }

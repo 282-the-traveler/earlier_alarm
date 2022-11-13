@@ -16,14 +16,18 @@ class _AlertAlarmState extends State<AlertAlarm> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(DateTimeFormat.getSystemTime(),
-            style: const TextStyle(
-              fontSize: 45.0,
-            )),
-        Text(DateTimeFormat.getSystemDate(),
-            style: const TextStyle(
-              fontSize: 30.0,
-            )),
+        Text(
+          DateTimeFormat.getSystemTime(),
+          style: const TextStyle(
+            fontSize: 45.0,
+          ),
+        ),
+        Text(
+          DateTimeFormat.getSystemDate(),
+          style: const TextStyle(
+            fontSize: 30.0,
+          ),
+        ),
         const SizedBox(
           height: 50.0,
         ),

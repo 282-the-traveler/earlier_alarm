@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:timer_builder/timer_builder.dart';
 
 class CurrentAlarmScreen extends StatefulWidget {
-  CurrentAlarmScreen();
+  const CurrentAlarmScreen({Key? key}) : super(key: key);
 
   @override
   State<CurrentAlarmScreen> createState() => _CurrentAlarmScreenState();
@@ -25,43 +25,46 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   String sharedDataName = 'EARLIER_ALARM';
 
   Timer runAlarm(BuildContext context) {
-    List<Alarm> alarmList =
-        context.read<AlarmProvider>().alarmList;
+    List<Alarm> alarmList = context.read<AlarmProvider>().alarmList;
+    print(alarmList.length);
     return Timer.periodic(
-        const Duration(
-          minutes: 1,
-        ), (timer) async {
-      List<String> _alarmList = [];
-      List<String> _calculatedAlarmList = [];
-      for (var alarm in alarmList) {
-        if (alarm.isOn) {
-          if (alarm.date.contains(DateTimeFormat.getToday()) &&
-              !DateTimeFormat.isContain(alarm.selectedWeek)) {
-            _alarmList.add(alarm.time);
-            _calculatedAlarmList.add(alarm.calculatedTime);
-          } else {
-            if (DateTimeFormat.getWeekday(alarm.selectedWeek)) {
+      const Duration(
+        minutes: 1,
+      ),
+      (timer) async {
+        List<String> _alarmList = [];
+        List<String> _calculatedAlarmList = [];
+        for (var alarm in alarmList) {
+          if (alarm.isOn) {
+            if (alarm.date.contains(DateTimeFormat.getToday()) &&
+                !DateTimeFormat.isContain(alarm.selectedWeek)) {
               _alarmList.add(alarm.time);
               _calculatedAlarmList.add(alarm.calculatedTime);
+            } else {
+              if (DateTimeFormat.getWeekday(alarm.selectedWeek)) {
+                _alarmList.add(alarm.time);
+                _calculatedAlarmList.add(alarm.calculatedTime);
+              }
             }
           }
         }
-      }
-      String _currentTime = DateTimeFormat.getSystemTime();
-      if (_calculatedAlarmList.contains(_currentTime)) {
-        MyPosition myPosition = MyPosition();
-        Map map = await myPosition.getPosition();
-        int condition = map['condition'];
-        WeatherConditions weatherConditions = WeatherConditions();
-        if (weatherConditions.isRainOrSnow(condition)) {
-          playAlarm(context);
+        String _systemTime = DateTimeFormat.getSystemTime();
+        if (_calculatedAlarmList.contains(_systemTime)) {
+          MyPosition myPosition = MyPosition();
+          Map map = await myPosition.getPosition();
+          int condition = map['condition'];
+          WeatherConditions weatherConditions = WeatherConditions();
+          if (weatherConditions.isRainOrSnow(condition)) {
+            playAlarm(context);
+          }
+        } else {
+          if (_alarmList.contains(_systemTime)) {
+            print(_systemTime);
+            playAlarm(context);
+          }
         }
-      } else {
-        if (_alarmList.contains(_currentTime)) {
-          playAlarm(context);
-        }
-      }
-    });
+      },
+    );
   }
 
   void playAlarm(BuildContext context) {
@@ -76,16 +79,22 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      runAlarm(context);
+    });
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    runAlarm(context);
-    context.read<AlarmProvider>().alarmList;
+    // context.read<AlarmProvider>().alarmList;
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Alarm> sharedDataList =
-        context.read<AlarmProvider>().alarmList;
+    List<Alarm> sharedDataList = context.read<AlarmProvider>().alarmList;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -144,8 +153,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                   MaterialPageRoute(
                     builder: (context) {
                       return AddAlarmScreen(
-                        alarm:
-                            context.read<AlarmProvider>().disposeAlarm(),
+                        alarm: context.read<AlarmProvider>().disposeAlarm(),
                         isEdit: false,
                       );
                     },
