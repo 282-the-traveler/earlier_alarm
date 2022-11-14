@@ -65,7 +65,6 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
   Widget build(BuildContext context) {
     AlarmProvider alarmProvider = Provider.of<AlarmProvider>(
       context,
-      listen: false,
     );
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -83,7 +82,6 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
               widget.alarm.calculatedTime = calculatedTime;
 
               if (widget.isEdit) {
-                print(widget.alarm.time.toString());
                 alarmProvider.setAlarm(widget.alarm);
               } else {
                 alarmProvider.addAlarm(widget.alarm);

@@ -16,14 +16,15 @@ class _AlarmTileState extends State<AlarmTile> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    context.read<AlarmProvider>().alarmList;
+    Future.microtask(() {
+      context.read<AlarmProvider>().alarmList;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     AlarmProvider alarmProvider = Provider.of<AlarmProvider>(
       context,
-      listen: false,
     );
 
     Offset _tapPosition = Offset.zero;

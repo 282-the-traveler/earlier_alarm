@@ -81,8 +81,10 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      runAlarm(context);
+    Future.microtask(() {
+      setState(() {
+        runAlarm(context);
+      });
     });
   }
 
@@ -94,7 +96,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Alarm> sharedDataList = context.read<AlarmProvider>().alarmList;
+    List<Alarm> sharedDataList = context.watch<AlarmProvider>().alarmList;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
