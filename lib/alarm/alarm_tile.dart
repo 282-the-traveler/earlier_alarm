@@ -23,9 +23,7 @@ class _AlarmTileState extends State<AlarmTile> {
 
   @override
   Widget build(BuildContext context) {
-    AlarmProvider alarmProvider = Provider.of<AlarmProvider>(
-      context,
-    );
+    AlarmProvider alarmProvider = context.watch<AlarmProvider>();
 
     Offset _tapPosition = Offset.zero;
     return GestureDetector(
@@ -34,7 +32,7 @@ class _AlarmTileState extends State<AlarmTile> {
       },
       child: ListTile(
         leading: Text(
-          alarmProvider.alarmList[widget.index].title,
+          context.read<AlarmProvider>().alarmList[widget.index].title,
         ),
         title: Text(alarmProvider.alarmList[widget.index].time,
             style: const TextStyle(
@@ -48,9 +46,7 @@ class _AlarmTileState extends State<AlarmTile> {
         trailing: Switch(
             value: alarmProvider.alarmList[widget.index].isOn,
             onChanged: (value) {
-              setState(() {
-                alarmProvider.alarmList[widget.index].isOn = value;
-              });
+              alarmProvider.alarmList[widget.index].isOn = value;
               alarmProvider.setAlarmDataList(alarmProvider.alarmList);
             }),
         onTap: () {
@@ -59,7 +55,7 @@ class _AlarmTileState extends State<AlarmTile> {
               alarm: alarmProvider.alarmList[widget.index],
               isEdit: true,
             );
-          })).then((value) => setState(() {}));
+          }));
         },
         onLongPress: () {
           final RenderObject? overlay =
@@ -72,7 +68,7 @@ class _AlarmTileState extends State<AlarmTile> {
                         40,
                         40,
                       ),
-                  Offset.zero & overlay!.semanticBounds.size),
+                  Offset.zero & overlay!.semanticBounds.size,),
               items: <PopupMenuEntry>[
                 PopupMenuItem(
                     value: widget.index,
@@ -85,10 +81,10 @@ class _AlarmTileState extends State<AlarmTile> {
               ]).then(
             (value) {
               alarmProvider.removeAlarm(value);
-              alarmProvider.setAlarmDataList(alarmProvider.alarmList);
-              setState(() {
-                context.read<AlarmProvider>().alarmList;
-              });
+              // alarmProvider.setAlarmDataList(alarmProvider.alarmList);
+              // setState(() {
+              //   context.read<AlarmProvider>().alarmList;
+              // });
             },
           );
         },

@@ -4,6 +4,7 @@ import 'package:earlier_alarm/alarm/alarm_tile.dart';
 import 'package:earlier_alarm/alarm/alert_alarm.dart';
 import 'package:earlier_alarm/common/datetime_format.dart';
 import 'package:earlier_alarm/data/my_position.dart';
+import 'package:earlier_alarm/map/map_screen.dart';
 import 'package:earlier_alarm/model/alarm.dart';
 import 'package:earlier_alarm/providers/alarm_provider.dart';
 import 'package:earlier_alarm/data/weather_conditions.dart';
@@ -110,7 +111,15 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return MapScreen();
+                  },
+                ),
+              );
+            },
             icon: const Icon(Icons.location_searching),
             iconSize: 30.0,
           )
@@ -160,7 +169,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
                       );
                     },
                   ),
-                ).then((value) => setState(() {}));
+                );
               },
             ),
             Expanded(

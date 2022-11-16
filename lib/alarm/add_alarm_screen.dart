@@ -63,9 +63,7 @@ class _AddAlarmScreenState extends State<AddAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AlarmProvider alarmProvider = Provider.of<AlarmProvider>(
-      context,
-    );
+    AlarmProvider alarmProvider = context.watch<AlarmProvider>();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
