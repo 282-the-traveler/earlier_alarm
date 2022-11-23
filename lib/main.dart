@@ -1,4 +1,5 @@
 import 'package:earlier_alarm/providers/alarm_provider.dart';
+import 'package:earlier_alarm/providers/position_provider.dart';
 import 'package:earlier_alarm/providers/weather_provider.dart';
 import 'package:earlier_alarm/loading.dart';
 import 'package:earlier_alarm/stop_watch.dart';
@@ -26,6 +27,9 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider(
             create: (BuildContext context) => AlarmProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (BuildContext context) => PositionProvider(),
           ),
         ],
         child: const MyHomePage(),

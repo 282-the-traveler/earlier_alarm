@@ -15,14 +15,13 @@ class Loading extends StatefulWidget {
 class _LoadingState extends State<Loading> {
   @override
   void initState() {
-    // TODO: implement initState
     getWeather(context);
     super.initState();
   }
 
   void getWeather(BuildContext context) async {
     MyPosition myPosition = MyPosition();
-    Map map = await myPosition.getPosition();
+    Map map = await myPosition.getWeatherCondition(context);
     int condition = map['condition'];
     int temperature = map['temperature'];
     int sunrise = map['sunrise'];
@@ -45,6 +44,7 @@ class _LoadingState extends State<Loading> {
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -23,8 +23,6 @@ class CurrentAlarmScreen extends StatefulWidget {
 }
 
 class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
-  String sharedDataName = 'EARLIER_ALARM';
-
   Timer runAlarm(BuildContext context) {
     List<Alarm> alarmList = context.read<AlarmProvider>().alarmList;
     print(alarmList.length);
@@ -52,7 +50,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
         String _systemTime = DateTimeFormat.getSystemTime();
         if (_calculatedAlarmList.contains(_systemTime)) {
           MyPosition myPosition = MyPosition();
-          Map map = await myPosition.getPosition();
+          Map map = await myPosition.getWeatherCondition(context);
           int condition = map['condition'];
           WeatherConditions weatherConditions = WeatherConditions();
           if (weatherConditions.isRainOrSnow(condition)) {
@@ -97,7 +95,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Alarm> sharedDataList = context.watch<AlarmProvider>().alarmList;
+    List<Alarm> alarmList = context.watch<AlarmProvider>().alarmList;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -176,7 +174,7 @@ class _CurrentAlarmScreenState extends State<CurrentAlarmScreen> {
               child: ListView.builder(
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
-                itemCount: sharedDataList.length,
+                itemCount: alarmList.length,
                 itemBuilder: (context, index) {
                   return AlarmTile(
                     index: index,

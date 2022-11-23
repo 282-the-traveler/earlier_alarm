@@ -1,29 +1,61 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:earlier_alarm/common/layout/default_layout.dart';
 import 'package:earlier_alarm/data/my_position.dart';
+import 'package:earlier_alarm/providers/position_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
-class MapScreen extends StatelessWidget {
-  const MapScreen({Key? key}) : super(key: key);
+class MapScreen extends StatefulWidget {
+  MapScreen({Key? key}) : super(key: key);
+
+  @override
+  State<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  @override
+  void initState() {
+    super.initState();
+    getCurrentPosition(context);
+  }
+
+  void getCurrentPosition(BuildContext context) async {
+    MyPosition myPosition = MyPosition();
+    await myPosition.getCurrentPosition(context);
+  }
 
   @override
   Widget build(BuildContext context) {
-
+    double latitude = context.read<PositionProvider>().latitude;
+    double longitude = context.read<PositionProvider>().longitude;
     Completer<GoogleMapController> _controller = Completer();
-    final CameraPosition _kGooglePlex = CameraPosition(
-      target: LatLng(37.42796133580664, -122.085749655962),
-      zoom: 14.4746,
+
+    CameraPosition _initialPosition = CameraPosition(
+      target: LatLng(latitude, longitude),
+      zoom: 15.0,
     );
-    // void getLatLng(BuildContext context) async {
-    //   MyPosition myPosition = MyPosition();
-    //   Map map = await myPosition.getMyCurrentPosition();
-    // }
+    final List<Marker> markers = [];
+
     return DefaultLayout(
       child: GoogleMap(
-        mapType: MapType.hybrid, initialCameraPosition: _kGooglePlex,
+        mapType: MapType.normal,
+        initialCameraPosition: _initialPosition,
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
+        onTap: (coordinate) {
+          // _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
+          int id = Random().nextInt(100);
 
+          setState(() {
+            markers.add(Marker(
+                position: coordinate, markerId: MarkerId(id.toString())));
+          });
+        },
+        markers: Set.from(markers),
       ),
     );
   }

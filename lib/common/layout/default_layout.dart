@@ -7,7 +7,7 @@ class DefaultLayout extends StatelessWidget {
   final Widget? bottomNavigationBar;
 
   DefaultLayout(
-      {Key? key, this.backgroundColor, required this.child, this.title, this.bottomNavigationBar})
+      {Key? key, this.backgroundColor, required this.child, this.title, this.bottomNavigationBar,})
       : super(key: key);
 
   @override
