@@ -31,7 +31,8 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     double latitude = context.read<PositionProvider>().latitude;
     double longitude = context.read<PositionProvider>().longitude;
-    Completer<GoogleMapController> _controller = Completer();
+    // Completer<GoogleMapController> _controller = Completer();
+    late GoogleMapController _controller;
 
     CameraPosition _initialPosition = CameraPosition(
       target: LatLng(latitude, longitude),
@@ -44,10 +45,12 @@ class _MapScreenState extends State<MapScreen> {
         mapType: MapType.normal,
         initialCameraPosition: _initialPosition,
         onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
+          setState(() {
+            _controller = controller;
+          });
         },
         onTap: (coordinate) {
-          // _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
+          _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
           int id = Random().nextInt(100);
 
           setState(() {
@@ -55,7 +58,7 @@ class _MapScreenState extends State<MapScreen> {
                 position: coordinate, markerId: MarkerId(id.toString())));
           });
         },
-        markers: Set.from(markers),
+        markers: markers.toSet(),
       ),
     );
   }
