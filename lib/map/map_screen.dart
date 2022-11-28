@@ -15,26 +15,31 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final List<Marker> _markers = [];
+  double latitude = 0.0;
+  double longitude = 0.0;
+  late GoogleMapController _controller;
 
   @override
   void initState() {
     super.initState();
     getCurrentPosition(context);
-    double latitude = context.read<PositionProvider>().latitude;
-    double longitude = context.read<PositionProvider>().longitude;
+    latitude = context.read<PositionProvider>().latitude;
+    longitude = context.read<PositionProvider>().longitude;
     _markers.add(Marker(
         markerId: const MarkerId("current_position"),
         draggable: true,
         position: LatLng(latitude, longitude)));
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
   void _updatePosition(CameraPosition _position) {
-    PositionProvider positionProvider = Provider.of<PositionProvider>(
-      context,
-      listen: false,
-    );
-    positionProvider.setLatitude(_position.target.latitude);
-    positionProvider.setLongitude(_position.target.longitude);
+    latitude = _position.target.latitude;
+    longitude = _position.target.longitude;
     var m = _markers.firstWhereOrNull(
       (p) => p.markerId == const MarkerId('current_position'),
     );
@@ -56,29 +61,56 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double latitude = context.read<PositionProvider>().latitude;
-    double longitude = context.read<PositionProvider>().longitude;
-    late GoogleMapController _controller;
-
     CameraPosition _initialPosition = CameraPosition(
       target: LatLng(latitude, longitude),
       zoom: 15.0,
     );
 
     return DefaultLayout(
-      child: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: _initialPosition,
-        onMapCreated: (GoogleMapController controller) {
-          setState(() {
-            _controller = controller;
-          });
-        },
-        onTap: (coordinate) {
-          _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
-        },
-        markers: _markers.toSet(),
-        onCameraMove: ((_position) => _updatePosition(_position)),
+      child: Stack(
+        children: [
+          GoogleMap(
+            mapType: MapType.normal,
+            initialCameraPosition: _initialPosition,
+            onMapCreated: (GoogleMapController controller) {
+              setState(() {
+                _controller = controller;
+              });
+            },
+            onTap: (coordinate) {
+              _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
+            },
+            markers: _markers.toSet(),
+            onCameraMove: ((_position) => _updatePosition(_position)),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10.0,
+            right: 10.0,
+            child: TextButton(
+              onPressed: () {
+                PositionProvider positionProvider =
+                    Provider.of<PositionProvider>(
+                  context,
+                  listen: false,
+                );
+                positionProvider.setLatitude(latitude);
+                positionProvider.setLongitude(longitude);
+                Navigator.pop(context);
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  Colors.white,
+                ),
+              ),
+              child: const Text(
+                'Save',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
