@@ -1,6 +1,4 @@
-import 'dart:async';
-import 'dart:math';
-
+import 'package:collection/collection.dart';
 import 'package:earlier_alarm/common/layout/default_layout.dart';
 import 'package:earlier_alarm/data/my_position.dart';
 import 'package:earlier_alarm/providers/position_provider.dart';
@@ -16,10 +14,39 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  final List<Marker> _markers = [];
+
   @override
   void initState() {
     super.initState();
     getCurrentPosition(context);
+    double latitude = context.read<PositionProvider>().latitude;
+    double longitude = context.read<PositionProvider>().longitude;
+    _markers.add(Marker(
+        markerId: const MarkerId("current_position"),
+        draggable: true,
+        position: LatLng(latitude, longitude)));
+  }
+
+  void _updatePosition(CameraPosition _position) {
+    PositionProvider positionProvider = Provider.of<PositionProvider>(
+      context,
+      listen: false,
+    );
+    positionProvider.setLatitude(_position.target.latitude);
+    positionProvider.setLongitude(_position.target.longitude);
+    var m = _markers.firstWhereOrNull(
+      (p) => p.markerId == const MarkerId('current_position'),
+    );
+    _markers.remove(m);
+    _markers.add(
+      Marker(
+        markerId: const MarkerId('current_position'),
+        position: LatLng(_position.target.latitude, _position.target.longitude),
+        draggable: true,
+      ),
+    );
+    setState(() {});
   }
 
   void getCurrentPosition(BuildContext context) async {
@@ -31,14 +58,12 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     double latitude = context.read<PositionProvider>().latitude;
     double longitude = context.read<PositionProvider>().longitude;
-    // Completer<GoogleMapController> _controller = Completer();
     late GoogleMapController _controller;
 
     CameraPosition _initialPosition = CameraPosition(
       target: LatLng(latitude, longitude),
       zoom: 15.0,
     );
-    final List<Marker> markers = [];
 
     return DefaultLayout(
       child: GoogleMap(
@@ -51,14 +76,9 @@ class _MapScreenState extends State<MapScreen> {
         },
         onTap: (coordinate) {
           _controller.animateCamera(CameraUpdate.newLatLng(coordinate));
-          int id = Random().nextInt(100);
-
-          setState(() {
-            markers.add(Marker(
-                position: coordinate, markerId: MarkerId(id.toString())));
-          });
         },
-        markers: markers.toSet(),
+        markers: _markers.toSet(),
+        onCameraMove: ((_position) => _updatePosition(_position)),
       ),
     );
   }
